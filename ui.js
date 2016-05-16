@@ -2,7 +2,7 @@
 // UI library for Lapiz.
 Lapiz.Module("UI", ["Collections", "Events", "Template"], function($L){
   var ui = $L.Namespace();
-  $L.set("UI", ui.namespace);
+  $L.set($L, "UI", ui.namespace);
 
   var _nodeProp = new WeakMap();
   function _getProperties(node){
@@ -15,7 +15,7 @@ Lapiz.Module("UI", ["Collections", "Events", "Template"], function($L){
   }
 
   var _views = $L.Map();
-  
+
   // _viewAttribute is the attribute that will be used to identify views
   // it is treated as a constant and is only here for DRY
   var _viewAttribute = 'l-view';
@@ -222,7 +222,7 @@ Lapiz.Module("UI", ["Collections", "Events", "Template"], function($L){
 
   var _init = false;
   var _initEvent = $L.SingleEvent();
-  $L.Event.LinkProperty(_eventNamespace.namespace, "loaded", _initEvent);
+  $L.Event.linkProperty(_eventNamespace.namespace, "loaded", _initEvent);
 
   document.addEventListener("DOMContentLoaded", function(){
     _loadViews();
