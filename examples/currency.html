@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Currency UI Test</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+      [l-view]{
+        display: none;
+      }
+    </style>
+  </head>
+<body>
+  <span l-view="price" currency="$currency" price="$price" resolver="currency.USD" live>$price</span>
+  <div id="main">FAIL</div>
+
+  <script type="text/javascript" src="../../../build/core.js"></script>
+  <script type="text/javascript" src="../../template/template.js"></script>
+  <script type="text/javascript" src="../ui.js"></script>
+  <script type="text/javascript" src="../uiHelpers.js"></script>
+
+  <script type="text/javascript">
+    Lapiz.UI.mediator("currency", function(_, _, resolverFn){
+      return resolverFn;
+    });
+
+    Lapiz.UI.mediator.currency("USD", function(token, ctx){
+      var ret = Lapiz.Template.Std.resolver(token, ctx);
+      if (typeof(ret) === "number") {
+        ret = "$" + ret.toFixed(2);
+      }
+      return ret;
+    });
+
+  </script>
+  <script type="text/javascript">
+    var e = Lapiz.Event();
+    var ctx = {
+      currency: "dollars",
+      price: 32.7315,
+      on: {
+        change: e.register
+      }
+    };
+    Lapiz.UI.render("price > #main", ctx);
+
+    setTimeout(function(){
+      ctx.price = 15.273;
+      e.fire(ctx);
+    }, 3000)
+
+  </script>
+  </body>
+</html>

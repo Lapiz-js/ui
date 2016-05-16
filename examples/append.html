@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Append View</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+      [l-view]{
+        display: none;
+      }
+    </style>
+  </head>
+<body>
+
+  <div id="main">
+    Success 1 of 4
+  </div>
+
+  <div l-view="foo" class="foo">$a</div>
+  <div l-view="bar">$b</div>
+  <div l-view="baz">$c</div>
+
+  <script type="text/javascript" src="../../../build/core.js"></script>
+  <script type="text/javascript" src="../../template/template.js"></script>
+  <script type="text/javascript" src="../ui.js"></script>
+  <script type="text/javascript" src="../uiHelpers.js"></script>
+  <script type="text/javascript">
+  /*
+  Demonstrates how render can append to a target.
+  The first render string will select a target in the document, all other render
+  strings will select a target in the view. Note that "baz>>" has no selector,
+  this indicates that it should append to the view, not a node within the view.
+  */
+
+  var ctx = {
+    a:"Success 2 of 4",
+    b:"Success 3 of 4",
+    c:"Success 4 of 4"
+  };
+  Lapiz.UI.render("foo >> #main", "bar >> div.foo","baz>>", ctx);
+  </script>
+  </body>
+</html>

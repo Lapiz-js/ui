@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Mutation Observer Test</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  </head>
+<body>
+
+  <div id="test">
+    <span id="remove">Testing</span>
+  </div>
+
+  <script type="text/javascript">
+    /*
+    This is not a Lapiz test, but a test of how Mutation Observers work. 
+    */
+
+    // select the target node
+    var target = document.getElementById("test");
+     
+    // create an observer instance
+    var observer = new MutationObserver(function(mutations) {
+      console.log(mutations);
+    });
+     
+    // configuration of the observer:
+    var config = { attributes: true, childList: true, characterData: true };
+     
+    // pass in the target node, as well as the observer options
+    observer.observe(target, config);
+    
+    setTimeout(function(){
+      document.getElementById("test").innerHTML = "";
+    },500)
+  </script>
+  </body>
+</html>

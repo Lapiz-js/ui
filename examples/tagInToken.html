@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Token UI Test</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+      [l-view]{
+        display: none;
+      }
+    </style>
+  </head>
+<body>
+  <div id="main"></div>
+
+  <div l-view="test">
+    $test
+  </div>
+
+  <script type="text/javascript" src="../../../build/core.js"></script>
+  <script type="text/javascript" src="../../template/template.js"></script>
+  <script type="text/javascript" src="../ui.js"></script>
+  <script type="text/javascript" src="../uiHelpers.js"></script>
+
+  <script type="text/javascript">
+    var ctx = {
+      test: "<p htmlInjection='does not work'>Success</p>"
+    };
+    Lapiz.UI.render("test>#main", ctx);
+  </script>
+  </body>
+</html>

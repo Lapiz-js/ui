@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Delete Test</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+      [l-view]{
+        display: none;
+      }
+    </style>
+  </head>
+<body>
+  <div id="main"></div>
+  <div id="sayhi">Click a name for them to say hello</div>
+
+  <div l-view="people">
+    <h1 resolver="resolver.capitalizeFirstLetter">Role: $role</h1>
+    <ul>
+      <li id="$id" repeat="$people" click="$sayHi" live>$name</li>
+    </ul>
+  </div>
+
+  <span l-view="sayHi">Hi, I'm $name</span>
+
+  <script type="text/javascript" src="../../../build/core.js"></script>
+  <script type="text/javascript" src="../../template/template.js"></script>
+  <script type="text/javascript" src="../ui.js"></script>
+  <script type="text/javascript" src="../uiHelpers.js"></script>
+
+  <script type="text/javascript" id="mock-ajax-data">
+    var $L = Lapiz;
+    // Pretend this came from the server over ajax
+    var people = [{
+      id: 5,
+      name: "Stephen",
+      role: "admin",
+      active: true
+    },{
+      id: 6,
+      name: "Adam",
+      role: "admin",
+      active: true
+    },{
+      id: 7,
+      name: "Lauren",
+      role: "editor",
+      active: true
+    },{
+      id: 9,
+      name: "Alex",
+      role: "editor",
+      active: false
+    },{
+      id: 15,
+      name: "Chris",
+      role: "admin",
+      active: false
+    }];
+
+    setTimeout(function(){
+      Person.get(6).delete();
+    }, 2000);
+  </script>
+  <script type="text/javascript" id="application-logic">
+    var Person = $L.Constructor(function(json){
+      var priv = this.priv;
+      var self = this;
+
+      priv.properties({
+        "id": "int",
+        "name": "string",
+        "role": "string",
+        "active": "bool",
+      }, json);
+
+      this.sayHi = function sayHi(){
+        $L.UI.render("sayHi>#sayhi", self);
+      };
+
+      this.delete = function(){
+        priv.fire.delete(self);
+      };
+    });
+
+    Person.parseList = function(lst){
+      $L.each(lst, function(i, person){
+        Person(person);
+      });
+    };
+
+    Person.getRoleContext = function(role){
+      return {
+        role: role,
+        people: Person.Filter("role", role)
+      }
+    };
+
+    $L.Index(Person);
+
+    Person.parseList(people);
+  </script>
+  <script type="text/javascript" id="display-logic">
+
+    $L.UI.mediator.resolver("capitalizeFirstLetter", function(node, ctx){
+      return function capitalizeFirstLetterResolver(token, ctx){
+        var ret = $L.parse.string($L.Template.Std.resolver(token, ctx));
+        return ret.charAt(0).toUpperCase() + ret.slice(1);
+      };
+    });
+
+    var admins = Person.getRoleContext("admin");
+    $L.UI.render("people>#main", admins);
+
+  </script>
+  </body>
+</html>

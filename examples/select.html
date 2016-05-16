@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Select Val</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+      [l-view]{
+        display: none;
+      }
+    </style>
+  </head>
+<body>
+  <div id="main"></div>
+  <div l-view="test">
+    <select selectVal="$val" id="sel" change="viewMethod.show">
+      <option value="1">Apple</option>
+      <option value="2">Banana</option>
+      <option value="3">Cantaloup</option>
+      <option value="4">Dates</option>
+    </select>
+    <span live>Selected: $val</span>
+  </div>
+
+  <script type="text/javascript" src="../../../build/core.js"></script>
+  <script type="text/javascript" src="../../template/template.js"></script>
+  <script type="text/javascript" src="../ui.js"></script>
+  <script type="text/javascript" src="../uiHelpers.js"></script>
+
+  <script type="text/javascript">
+    var $L = Lapiz;
+
+    var ctx = $L.Object();
+    ctx.priv.properties({
+      'val':'int',
+    },{
+      'val':2
+    })
+
+    $L.UI.render("test > #main", ctx);
+
+    $L.UI.mediator.viewMethod("show", function(node, ctx, e){
+      ctx.val = node.value
+    });
+    
+  </script>
+  </body>
+</html>

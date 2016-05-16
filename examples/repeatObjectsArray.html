@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Repeat Test</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+      [l-view]{
+        display: none;
+      }
+    </style>
+  </head>
+<body>
+
+  <div id="main"></div>
+
+  <ul l-view="list">
+    <li repeat="$$" age="$Age">$Name</li>
+  </ul>
+
+  <script type="text/javascript" src="../../../build/core.js"></script>
+  <script type="text/javascript" src="../../template/template.js"></script>
+  <script type="text/javascript" src="../ui.js"></script>
+  <script type="text/javascript" src="../uiHelpers.js"></script>
+
+  <script type="text/javascript">
+    var $L = Lapiz;
+
+    $L.UI.render("list>#main",[
+      {Name: "Adam", Age: 30},
+      {Name: "Alex", Age: 26},
+      {Name: "Lauren", Age: 28},
+      {Name: "Stephen", Age: 29}
+    ]);
+  </script>
+  </body>
+</html>

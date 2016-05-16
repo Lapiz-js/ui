@@ -1,0 +1,61 @@
+
+  
+
+  $L.UI.addMediator("view", function(node, ctx, viewOrGenerator){
+    return function(){
+      var view;
+      var viewCtx;
+      if (typeof(viewOrGenerator) === "function" ){
+        viewOrGenerator = viewOrGenerator(node, ctx);
+      }
+      if (typeof(viewOrGenerator) === "string"){
+        view = viewOrGenerator;
+        viewCtx = ctx;
+      } else {
+        if (viewOrGenerator.hasOwnProperty("view")){
+          view = viewOrGenerator.view;
+          if (viewOrGenerator.hasOwnProperty("ctx")){
+            viewCtx = viewOrGenerator.ctx;
+          }
+        }
+        throw new Error("An invalid view was given or generated");
+      }
+      $L.UI.render(view, viewCtx);
+    };
+  });
+
+  
+
+  
+  $L.UI.attribute("blur", function(node, _, fn){
+    if (typeof(fn) !== "function") { throw "Expected function"; }
+    node.addEventListener("blur", fn);
+  });
+  $L.UI.attribute("submit", function(node, _, fn){
+    if (typeof(fn) !== "function") { throw "Expected function"; }
+    node.addEventListener("submit", fn);
+  });
+
+  $L.UI.mutateAttribute("with", function(node, _, attrVal){
+    node._context = attrVal;
+    $L.UI.mutate(node);
+  });
+
+  $L.UI.resolverAttribute = function(name, resolverFactory){
+    Lapiz.UI.tokenAttribute(name, function(node, ctx, val){
+      return Lapiz.UI.Tokenizer(resolverFactory(node, ctx, val));
+    });
+  };
+
+  $L.UI.simpleResolver = function(name, resolver){
+    var resolverFactory = function(_, _, val){
+      return function(token, ctx){
+        return resolver(token, ctx, val);
+      };
+    };
+    $L.UI.resolverAttribute(name, resolverFactory);
+  };
+
+  
+
+  

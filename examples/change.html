@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>On.Change UI Test</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+      [l-view]{
+        display: none;
+      }
+    </style>
+  </head>
+<body>
+  <div id="main">fail</div>
+  <div l-view="live" live>$bar</div>
+  <div l-view="notLive">$bar</div>
+
+  <script type="text/javascript" src="../../../build/core.js"></script>
+  <script type="text/javascript" src="../../template/template.js"></script>
+  <script type="text/javascript" src="../ui.js"></script>
+  <script type="text/javascript" src="../uiHelpers.js"></script>
+  <script type="text/javascript">
+  /*
+  Demonstrates how the live attriute works. As foo changes, the view is
+  automatically updated.
+
+  What you should see is that the live view updates as the value of foo.bar
+  changes, while notLive remains "Init". After the changes have completed (2
+  seconds), the contents of #main are over-written. This should cause the
+  remove event to fire. We test this by checking the number of registered
+  listeners (foo.priv.fire.change.length) after a 100ms delay.
+  */
+
+    var Foo = Lapiz.Constructor(function(bar){
+      this.priv.properties({
+        bar: "string"
+      }, this.priv.argDict());
+    });
+
+    var foo = Foo("Init");
+    Lapiz.UI.render("live>#main", "notLive>>", foo);
+
+    Lapiz.UI.on.loaded(function(){
+      foo.bar = "33% (wait 1 seconds)";
+    });
+
+    setTimeout(function(){
+      foo.bar = "66% (wait 1 seconds)";
+    }, 1000);
+
+    setTimeout(function(){
+      document.getElementById("main").innerHTML = "removing";
+    }, 2000);
+
+    setTimeout(function(){
+      if (foo.priv.fire.change.length === 0){
+        document.getElementById("main").innerHTML = "success";
+      } else {
+        document.getElementById("main").innerHTML = "failed to remove";
+      }
+    }, 2100);
+  </script>
+  </body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Append View</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+      [l-view]{
+        display: none;
+      }
+    </style>
+  </head>
+<body>
+  <div id="main"></div>
+  <div l-view="test">
+    <div display="viewMethod.A">A</div>
+    <div display="viewMethod.B">B</div>
+  </div>
+
+  <script type="text/javascript" src="../../../build/core.js"></script>
+  <script type="text/javascript" src="../../template/template.js"></script>
+  <script type="text/javascript" src="../ui.js"></script>
+  <script type="text/javascript" src="../uiHelpers.js"></script>
+
+  <script type="text/javascript">
+    Lapiz.UI.mediator.viewMethod("A", function(){
+      console.log("A");
+    });
+
+    Lapiz.UI.mediator.viewMethod("B", function(){
+      console.log("B");
+    });
+
+    Lapiz.UI.render("test > #main");
+  </script>
+  </body>
+</html>

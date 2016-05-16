@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>If UI Test</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+      [l-view]{
+        display: none;
+      }
+    </style>
+  </head>
+<body>
+  <div id="main"></div>
+  <div l-view="test">
+    <span if="viewMethod.success">success</span>
+    <span if="viewMethod.fail">fail</span>
+    <div repeat="$test">$name</div>
+  </div>
+
+  <script type="text/javascript" src="../../../build/core.js"></script>
+  <script type="text/javascript" src="../../template/template.js"></script>
+  <script type="text/javascript" src="../ui.js"></script>
+  <script type="text/javascript" src="../uiHelpers.js"></script>
+
+  <script type="text/javascript">
+    var $L = Lapiz;
+
+    $L.UI.mediator.viewMethod("success", function(node, ctx){ return true; });
+    $L.UI.mediator.viewMethod("fail", function(node, ctx){ return false; });
+
+    $L.UI.render("test > #main",{
+      test:[
+        {name:"Adam"},
+        {name:"Lauren"}
+      ]
+    });
+    
+  </script>
+  </body>
+</html>

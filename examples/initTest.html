@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Init Test</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  </head>
+<body>
+  <div id="before">FAILED</div>
+  <div id="after">FAILED</div>
+
+  <script type="text/javascript" src="../../../build/core.js"></script>
+  <script type="text/javascript" src="../../template/template.js"></script>
+  <script type="text/javascript" src="../ui.js"></script>
+  <script type="text/javascript" src="../uiHelpers.js"></script>
+
+  <script type="text/javascript">
+    var $L = Lapiz;
+
+    $L.UI.on.loaded = function(){
+      $L.UI.id("before").innerHTML = "Success";
+      $L.UI.on.loaded = function(){
+        $L.UI.id("after").innerHTML = "Success";
+      }
+    };
+  </script>
+  </body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Mutate UI Test</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+      [l-view]{
+        display: none;
+      }
+    </style>
+  </head>
+<body>
+  <div id="main">Failed</div>
+  <div l-view="test">
+    <div beforeTest="test" protect="$name">Success</div>
+  </div>
+
+  <script type="text/javascript" src="../../../build/core.js"></script>
+  <script type="text/javascript" src="../../template/template.js"></script>
+  <script type="text/javascript" src="../ui.js"></script>
+  <script type="text/javascript" src="../uiHelpers.js"></script>
+
+  <script type="text/javascript">
+    /*
+    Because beforeTest should run before protect and beforeTest sets bindState.proceed
+    to false, protect should remain $name, it should not resolve to Adam.
+    */
+
+    Lapiz.UI.attribute("protect", function(node, ctx, val){
+      console.log("protect");
+      alert("Failed B");
+    });
+
+    Lapiz.UI.attribute("beforeTest", function(node, ctx, val){
+      console.log("beforeTest");
+
+      if (val !== "test"){
+        alert("Failed A");
+      }
+      Lapiz.UI.bindState.proceed = false;
+    },"protect");
+
+    Lapiz.UI.render("test > #main",{
+      name:"Adam"
+    });
+  </script>
+  </body>
+</html>

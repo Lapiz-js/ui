@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Token UI Test</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+      [l-view]{
+        display: none;
+      }
+    </style>
+  </head>
+<body>
+  <div id="main"></div>
+  <div id="attr">fail</div>
+  <div template="test">
+    Outside: $outside1 $outside2
+    <div tokenTest="success - attr">
+      {{inside}}
+    </div>
+  </div>
+
+  <script type="text/javascript" src="../../../build/core.js"></script>
+  <script type="text/javascript" src="../../template/template.js"></script>
+  <script type="text/javascript" src="../ui.js"></script>
+  <script type="text/javascript" src="../uiHelpers.js"></script>
+
+  <script type="text/javascript">
+
+  /*
+  TOOD: Finish this
+  This demonstrates that the entire token engine could be replaced or appended.
+  */
+
+    Lapiz.UI.tokenAttribute("tokenTest", function(node, ctx, val){
+      Lapiz.UI.id("attr").innerHTML = val;
+      return function(text, ctx){
+        return text.replace("{{inside}}", ctx.inside);
+      }
+    });
+
+    var ctx = {
+      outside1: "1 of 2 ",
+      outside2: "2 of 2 ",
+      inside: "success - inside"
+    };
+    Lapiz.UI.render("test>main", ctx);
+  </script>
+  </body>
+</html>

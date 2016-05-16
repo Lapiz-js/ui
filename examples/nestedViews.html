@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Nested Views Test</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+      [l-view]{
+        display: none;
+      }
+    </style>
+  </head>
+<body>
+  <div id="main"></div>
+
+  <div l-view="outer" click="viewMethod.success">
+    Outer (click to test)
+    <div id="outer"></div>
+  </div>
+
+  <div l-view="inner">Inner</div>
+
+  <script type="text/javascript" src="../../../build/core.js"></script>
+  <script type="text/javascript" src="../../template/template.js"></script>
+  <script type="text/javascript" src="../ui.js"></script>
+  <script type="text/javascript" src="../uiHelpers.js"></script>
+
+  <script type="text/javascript">
+    var $L = Lapiz;
+
+    $L.UI.render("outer > #main", "inner > #outer");
+
+    $L.UI.mediator.viewMethod("success", function(){
+      alert("success");
+    })
+    
+  </script>
+  </body>
+</html>

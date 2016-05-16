@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Delete Node</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+      [l-view]{
+        display: none;
+      }
+    </style>
+  </head>
+<body>
+
+  <div id="main"></div>
+  <div id="status">Good</div>
+
+  <span l-view="counter" count="$people"></span>
+
+  <script type="text/javascript" src="../../../build/core.js"></script>
+  <script type="text/javascript" src="../../template/template.js"></script>
+  <script type="text/javascript" src="../ui.js"></script>
+  <script type="text/javascript" src="../uiHelpers.js"></script>
+
+  <script type="text/javascript">
+    var People = Lapiz.Dictionary([
+      {
+        name: 'Adam',
+        age: 30
+      },{
+        name: 'Lauren',
+        age: 28
+      },{
+        name: 'Stephen',
+        age: 29
+      },{
+        name: 'Alex',
+        age: 26
+      }
+    ]);
+
+    var invocations = 0;
+    Lapiz.UI.attribute("count", function(node, _, collection){
+      var fn = function(){
+        var l = collection.len;
+        node.innerHTML = l
+        invocations += 1;
+      };
+      fn();
+      collection.on.insert(fn);
+      collection.on.remove(fn);
+      Lapiz.UI.on.remove(node, function(){
+        collection.on.insert.deregister(fn);
+        collection.on.remove.deregister(fn);
+      });
+    });
+
+    Lapiz.UI.render("counter>#main", {people: People.Sort('age')});
+
+    setTimeout(function(){
+      if (invocations !== 1){
+        Lapiz.UI.id("status").innerHTML = "Fail: expeced 1";
+      }
+      People(4, {name:"Chris", age:40});
+      if (invocations !== 2){
+        Lapiz.UI.id("status").innerHTML = "Fail: expeced 2";
+      }
+    }, 1000);
+
+    setTimeout(function(){
+      Lapiz.UI.id("main").innerHTML = "DELETED";
+    }, 1500);
+
+    setTimeout(function(){
+      People(5, {name:"Greg", age:65});
+      if (invocations !== 2){
+        Lapiz.UI.id("status").innerHTML = "Fail: expeced 2";
+      } else {
+        Lapiz.UI.id("main").innerHTML = "Passed!";
+      }
+    }, 2000);
+
+  </script>
+  </body>
+</html>

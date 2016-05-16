@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Form UI Test</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+      label{
+        display: block;
+        float: left;
+        padding-right: 5px;
+        text-align: right;
+        width: 100px;
+      }
+    </style>
+  </head>
+<body>
+  <form id="form">
+    <div><label>Name</label><input name="name" type="text" /></div>
+    <div><label>Role</label><input name="role" type="text" /></div>
+    <div><label>Notes</label><textarea name="notes"></textarea></div>
+    <div><label>&nbsp;</label>
+      <button click="form.sayBye">Cancel</button>
+      <button click="form.sayHi">Save</button>
+    </div>
+  </form>
+
+  <script type="text/javascript" src="../../../build/core.js"></script>
+  <script type="text/javascript" src="../../template/template.js"></script>
+  <script type="text/javascript" src="../ui.js"></script>
+  <script type="text/javascript" src="../uiHelpers.js"></script>
+
+  <script type="text/javascript">
+    var $L = Lapiz;
+    $L.UI.mediator.form("sayHi", function(form){
+      alert("Hi, my name is " + form['name']);
+    });
+
+    $L.UI.mediator.form("sayBye", function(form){
+      alert("Goodbye, " + form['name']);
+    });
+
+    $L.UI.on.loaded(function(){
+      $L.UI.bind($L.UI.id("form"));
+    });
+  </script>
+  </body>
+</html>

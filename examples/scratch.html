@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>UI2 Scratch Pad</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  </head>
+<body>
+  Before
+  <div l-view="foobar">
+    Hi, $name!
+    <div attr2="$name">
+      <span click="$foo">Click Foo</span>
+      <div click="med.test">Click med.test</div>
+    </div>
+  </div>
+  <div id="test"></div>
+  <div id="removeTest">Remove</div>
+  After
+
+  <script type="text/javascript" src="../../../build/core.js"></script>
+  <script type="text/javascript" src="../ui.js"></script>
+  <script type="text/javascript" src="../../template/template.js"></script>
+  <script type="text/javascript">
+    Lapiz.UI.attribute({
+      "foo": function(node, ctx, val) {
+        console.log(val);
+      },
+      "bar": function(){
+        console.log("in attr bar");
+      },
+      "click": function(node, _, fn){
+        if (typeof(fn) !== "function") { throw "Expected function"; }
+        node.addEventListener("click", fn);
+      }
+    });
+
+    Lapiz.UI.mediator("med",function(node, ctx, fn){
+      return function(){
+        console.log("med");
+        fn();
+      };
+    });
+
+    Lapiz.UI.mediator.med("test", function(){
+      console.log("test");
+    });
+
+    Lapiz.on.LoadUI(function(){
+      var foobar = Lapiz.UI2.CloneView("foobar")
+      var ctx = {
+        name:"Adam",
+        foo: function(){
+          console.log("Click!");
+        }
+      };
+      Lapiz.UI.process(foobar, ctx, Lapiz.Template.Std.templator);
+      document.getElementById("test").appendChild(foobar);
+
+      Lapiz.UI.on.remove(document.getElementById("removeTest"), logRemoved);
+    });
+
+    function logRemoved(){
+      console.log("Removed");
+    }
+
+    setTimeout(function(){
+      document.getElementById("removeTest").remove();
+    },2000);
+
+  </script>
+  </body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Repeat Test</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+      [l-view]{
+        display: none;
+      }
+    </style>
+  </head>
+<body>
+
+  <div id="main"></div>
+
+  <ul l-view="list">
+    <li repeat="$$">$$<span if="viewMethod.cantaloup">!!!</span></li>
+  </ul>
+
+  <script type="text/javascript" src="../../../build/core.js"></script>
+  <script type="text/javascript" src="../../template/template.js"></script>
+  <script type="text/javascript" src="../ui.js"></script>
+  <script type="text/javascript" src="../uiHelpers.js"></script>
+
+  <script type="text/javascript">
+    Lapiz.UI.mediator.viewMethod("cantaloup", function(node, ctx){
+      return ctx === "cantaloup";
+    });
+
+    Lapiz.UI.render("list > #main",[
+      "apple",
+      "bananna",
+      "cantaloup",
+      "date",
+      "elderberry"
+    ]);
+  </script>
+  </body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Node Removed</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  </head>
+  <body id="body">
+    <p>This test is meant to detect when a node is removed, it is not a Lapiz UI test.</p>
+    <div id="outer">
+      <span id='deleteMe'>Delete Me</span>
+    </div>
+      
+    <script type="text/javascript">
+      function $(elId){ return document.getElementById(elId); }
+
+      document.addEventListener("DOMContentLoaded", function(){
+        console.log("Start");
+        var target = document.body;
+
+        onDelete($("deleteMe"), function(){
+          console.log("Running cleanup on deleteMe");
+        });
+
+        onDelete($("deleteMe"), function(){
+          console.log("Running another cleanup on deleteMe");
+        });
+
+        onDelete($("deleteMe").firstChild, function(){
+          console.log("Running cleanup on TextNode");
+        });
+
+        var m = new MutationObserver( function(mutations){
+          console.log("Mutations observed");
+          mutations.forEach( function(mutation){
+            var l = mutation.removedNodes.length;
+            var i;
+            for(i=0; i<l; i+=1){
+              handleDeleteNode(mutation.removedNodes[i]);
+            }
+          });
+        } );
+        m.observe(document.body, { childList: true, subtree:true });
+
+      });
+
+      function handleDeleteNode(node){
+        if (node._delete) {
+          node._delete.forEach(function(fn){ fn(); });
+        }
+        var l = node.childNodes.length;
+        var i;
+        for(i=0; i<l; i+=1){
+          handleDeleteNode(node.childNodes[i]);
+        }
+      }
+
+      function onDelete(node, fn){
+        if (!node._delete) { node._delete = [];}
+        node._delete.push(fn);
+      }
+
+      function die(){
+        $("deleteMe").remove();
+      }
+
+      function die2(){
+        $("outer").innerHTML = "";
+      }
+
+      setTimeout(die2, 500);
+    </script>
+  </body>
+</html>

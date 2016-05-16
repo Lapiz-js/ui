@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Repeat Test</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+      [l-view]{
+        display: none;
+      }
+    </style>
+  </head>
+<body>
+
+  <div id="main"></div>
+  <div id="sayHi">Click a name for them to say hello</div>
+
+  <div l-view="people">
+    <h1 capitalizeFirstLetter>Role: $role</h1>
+    <ul>
+      <li id="$id" repeat="$people" click="view.sayHi" live>$name</li>
+    </ul>
+  </div>
+
+  <span l-view="sayHi" live>Hi, I'm $name ($role)</span>
+
+  <script type="text/javascript" src="../../../build/core.js"></script>
+  <script type="text/javascript" src="../../template/template.js"></script>
+  <script type="text/javascript" src="../ui.js"></script>
+  <script type="text/javascript" src="../uiHelpers.js"></script>
+
+  <script type="text/javascript" id="simulate-network">
+    var $L = Lapiz;
+    // Pretend this came from the server over ajax
+    var people = [{
+      id: 5,
+      name: "Stephen",
+      role: "admin",
+      active: true
+    },{
+      id: 6,
+      name: "Adm",
+      role: "admin",
+      active: true
+    },{
+      id: 7,
+      name: "Lauren",
+      role: "editor",
+      active: true
+    },{
+      id: 9,
+      name: "Alex",
+      role: "editor",
+      active: false
+    },{
+      id: 15,
+      name: "Chris",
+      role: "admin",
+      active: false
+    }];
+
+    setTimeout(function(){
+      Person.get(6).name = "Adam";
+    }, 2000);
+
+    setTimeout(function(){
+      Person.get(7).role = "admin";
+    }, 3000);
+
+    setTimeout(function(){
+      Person.get(15).role = "editor";
+    }, 4000);
+  </script>
+  <script type="text/javascript" id="application-logic">
+    var Person = Lapiz.Constructor(function(json){
+      this.priv.properties({
+        "id"    : "int",
+        "name"  : "string",
+        "role"  : "string",
+        "active": "bool",
+      }, json);
+    });
+    Person.parseList = function(lst){
+      Lapiz.each(lst, function(i, person){ Person(person)});
+    };
+    Person.getRoleContext = function(role){
+      return {
+        role: role,
+        people: Person.Filter("role", role)
+      }
+    };
+
+    $L.Index(Person);
+
+    Person.parseList(people);
+  </script>
+  <script type="text/javascript" id="display-logic">
+
+    Lapiz.UI.mediator.view("sayHi", "sayHi > #sayHi");
+
+    var admins = Person.getRoleContext("admin");
+    $L.UI.render("people>#main", admins);
+  </script>
+  </body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Template Attributes UI Test</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+      [l-view]{
+        display: none;
+      }
+    </style>
+  </head>
+<body>
+  <div id="main"></div>
+  <form l-view="test">
+    <h2>$succeedFail</h2>
+    <input name="name" value="$name" />
+  </form>
+
+  <script type="text/javascript" src="../../../build/core.js"></script>
+  <script type="text/javascript" src="../../template/template.js"></script>
+  <script type="text/javascript" src="../ui.js"></script>
+  <script type="text/javascript" src="../uiHelpers.js"></script>
+
+  <script type="text/javascript">
+    var $L = Lapiz;
+
+    var model = {
+      id:"foo",
+      succeedFail: "Success - h1",
+      name: "Success - attribute"
+    };
+    
+    $L.UI.render("test > #main", model);
+  </script>
+  </body>
+</html>

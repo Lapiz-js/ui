@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Q UI Test</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+      [l-view]{
+        display: none;
+      }
+    </style>
+  </head>
+<body>
+  <div id="main"></div>
+  <div l-view="test" someData="$bar">
+    <input q="#id(.$bar).class2[value=$succeedFail][style=color:red;]">
+  </div>
+
+  <script type="text/javascript" src="../../../build/core.js"></script>
+  <script type="text/javascript" src="../../template/template.js"></script>
+  <script type="text/javascript" src="../ui.js"></script>
+  <script type="text/javascript" src="../uiHelpers.js"></script>
+
+  <script type="text/javascript">
+    var $L = Lapiz;
+
+    var context = {
+      id:"foo",
+      bar: "glorp",
+      succeedFail: "Success",
+      subModel: {
+        test: "Success"
+      }
+    };
+    $L.UI.render("test > #main", context);
+    
+  </script>
+  </body>
+</html>
