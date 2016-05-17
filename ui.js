@@ -30,14 +30,14 @@ Lapiz.Module("UI", ["Collections", "Events", "Template"], function($L){
     });
   }
 
-  ui.method(function CloneView(name){
+  ui.meth(function CloneView(name){
     if (_views[name] === undefined){
       throw new Error("View "+name+" is not defined");
     }
     return _views[name].cloneNode(true);
   });
 
-  ui.method(function View(name, viewStr){
+  ui.meth(function View(name, viewStr){
     //TODO: this could use some work
     var div = document.createElement("div");
     div.innerHTML = viewStr;
@@ -49,7 +49,7 @@ Lapiz.Module("UI", ["Collections", "Events", "Template"], function($L){
   var _attributes = $L.Map();
   var _attributeOrder = [];
   // @method ui.attribute users can register an attribute
-  ui.method(function attribute(name, fn, before){
+  ui.meth(function attribute(name, fn, before){
     name = name.toLocaleLowerCase();
     if (fn === undefined){
       //define plural
@@ -70,7 +70,7 @@ Lapiz.Module("UI", ["Collections", "Events", "Template"], function($L){
   });
 
   var _mediators = $L.Map();
-  ui.method(function mediator(mediatorName, fn){
+  ui.meth(function mediator(mediatorName, fn){
     if (typeof mediatorName !== "string"){
       throw new Error("Mediator name must be a string");
     }
@@ -129,7 +129,7 @@ Lapiz.Module("UI", ["Collections", "Events", "Template"], function($L){
     }
   }
 
-  ui.method(function bind(node, ctx, templator){
+  ui.meth(function bind(node, ctx, templator){
     var cur, i, attrName, attrVal, _props;
     if (node.nodeName.toLowerCase() === "script") { return; }
     var _after = [];
@@ -267,7 +267,7 @@ Lapiz.Module("UI", ["Collections", "Events", "Template"], function($L){
     $L.remove(_props['onRemove'], fn);
   }});
 
-  _eventNamespace.method(remove);
+  _eventNamespace.meth(remove);
 
   function _splitRenderString(str){
     var idx = str.indexOf(">");
@@ -282,7 +282,7 @@ Lapiz.Module("UI", ["Collections", "Events", "Template"], function($L){
     return data;
   }
 
-  ui.method(function render(){
+  ui.meth(function render(){
     if (!_init){
       var argsClsr = arguments;
       _initEvent.register(function(){
@@ -326,7 +326,7 @@ Lapiz.Module("UI", ["Collections", "Events", "Template"], function($L){
     target.appendChild(view);
   });
 
-  ui.method(function id(elId, doc){
+  ui.meth(function id(elId, doc){
     return (doc || document).getElementById(elId);
   });
 
