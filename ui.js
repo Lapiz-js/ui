@@ -1,7 +1,8 @@
-// @Module UI2
-// UI library for Lapiz.
 Lapiz.Module("UI", ["Collections", "Events", "Template"], function($L){
+  
   var ui = $L.Namespace();
+  // > Lapiz.UI
+  // Namespace for the UI methods.
   $L.set($L, "UI", ui.namespace);
 
   var _nodeProp = new WeakMap();
@@ -19,6 +20,11 @@ Lapiz.Module("UI", ["Collections", "Events", "Template"], function($L){
   // _viewAttribute is the attribute that will be used to identify views
   // it is treated as a constant and is only here for DRY
   var _viewAttribute = 'l-view';
+  // > l-view
+  // Used to create a lapiz view:
+  // > <htmlNode l-view="viewName>...</htmlNode>
+  // All nodes in the document with this attribute will be cloned and saved and
+  // the original will be removed from the document.
 
   // _loadViews is automatically invoked. It removes any node with the l-view
   // attribute and saves it as a view
@@ -30,6 +36,8 @@ Lapiz.Module("UI", ["Collections", "Events", "Template"], function($L){
     });
   }
 
+  // > Lapiz.UI.CloneView(name)
+  // Returns an html Node that is a clone of the View.
   ui.meth(function CloneView(name){
     if (_views[name] === undefined){
       throw new Error("View "+name+" is not defined");
@@ -37,6 +45,8 @@ Lapiz.Module("UI", ["Collections", "Events", "Template"], function($L){
     return _views[name].cloneNode(true);
   });
 
+  // > Lapiz.UI.View(name, viewStr)
+  // Adds a view that can be rendered or cloned.
   ui.meth(function View(name, viewStr){
     //TODO: this could use some work
     var div = document.createElement("div");
@@ -48,14 +58,16 @@ Lapiz.Module("UI", ["Collections", "Events", "Template"], function($L){
 
   var _attributes = $L.Map();
   var _attributeOrder = [];
-  // @method ui.attribute users can register an attribute
+  // > Lapiz.UI.attribute(name, fn)
+  // > Lapiz.UI.attribute(name, fn, before)
+  // > Lapiz.UI.attribute(attributes)
   ui.meth(function attribute(name, fn, before){
-    name = name.toLocaleLowerCase();
     if (fn === undefined){
       //define plural
       $L.each(name, Lapiz.UI.attribute)
       return;
     }
+    name = name.toLocaleLowerCase();
     _attributes[name.toLowerCase()] = fn;
     if (before === undefined){
       _attributeOrder.push(name);
@@ -70,6 +82,8 @@ Lapiz.Module("UI", ["Collections", "Events", "Template"], function($L){
   });
 
   var _mediators = $L.Map();
+  // > Lapiz.UI.mediator(mediatorName,fn)
+  // > Lapiz.UI.mediator(mediators)
   ui.meth(function mediator(mediatorName, fn){
     if (typeof mediatorName !== "string"){
       throw new Error("Mediator name must be a string");
@@ -82,6 +96,8 @@ Lapiz.Module("UI", ["Collections", "Events", "Template"], function($L){
       handler: fn,
       properties: properties
     };
+    // > Lapiz.UI.mediator.mediatorName(propertyName, property)
+    // > Lapiz.UI.mediator.mediatorName(properties)
     var registerFn = function(propName, prop){
       if (prop === undefined){
         //defining many with an array
@@ -129,6 +145,7 @@ Lapiz.Module("UI", ["Collections", "Events", "Template"], function($L){
     }
   }
 
+  // > Lapiz.UI.bind(node, ctx, templator)
   ui.meth(function bind(node, ctx, templator){
     var cur, i, attrName, attrVal, _props;
     if (node.nodeName.toLowerCase() === "script") { return; }
@@ -282,6 +299,7 @@ Lapiz.Module("UI", ["Collections", "Events", "Template"], function($L){
     return data;
   }
 
+  // > Lapiz.UI.render(renderString..., ctx);
   ui.meth(function render(){
     if (!_init){
       var argsClsr = arguments;
@@ -326,10 +344,13 @@ Lapiz.Module("UI", ["Collections", "Events", "Template"], function($L){
     target.appendChild(view);
   });
 
+  // > Lapiz.UI.id(elId)
+  // > Lapiz.UI.id(elId, doc)
   ui.meth(function id(elId, doc){
     return (doc || document).getElementById(elId);
   });
 
+  // > attribute:resolver
   $L.UI.attribute("resolver", function(node, ctx, resolver){
     var _props = _getProperties(node);
     var templator = $L.Template.Templator($L.Template.Std.tokenizer, resolver);

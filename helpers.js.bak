@@ -24,17 +24,6 @@
     };
   });
 
-  
-
-  
-  $L.UI.attribute("blur", function(node, _, fn){
-    if (typeof(fn) !== "function") { throw "Expected function"; }
-    node.addEventListener("blur", fn);
-  });
-  $L.UI.attribute("submit", function(node, _, fn){
-    if (typeof(fn) !== "function") { throw "Expected function"; }
-    node.addEventListener("submit", fn);
-  });
 
   $L.UI.mutateAttribute("with", function(node, _, attrVal){
     node._context = attrVal;
