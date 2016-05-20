@@ -80,7 +80,7 @@
       }, json);
     });
     Person.parseList = function(lst){
-      Lapiz.each(lst, function(i, person){ Person(person)});
+      Lapiz.each(lst, Person);
     };
     Person.getRoleContext = function(role){
       return {

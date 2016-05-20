@@ -1,17 +1,18 @@
 Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
+  var UI = $L.UI;
 
   // > attribute:if
   // > <htmlNode if="$ctxVal">...</htmlNode>
   // If the attrVal ($ctxVal above) evaluates to false, the node and it's
   // children are removed. If the attribute is a function it will be invoked
   // with no arguments and the return value will be evaluated as a boolean
-  $L.UI.attribute("if", function(node, _, attrVal){
+  UI.attribute("if", function(node, _, attrVal){
     if (typeof(attrVal) === "function") {attrVal = attrVal();}
     node.removeAttribute("if");
     if (!attrVal){
       var parent = node.parentNode;
       parent.removeChild(node);
-      $L.UI.bindState.proceed = false;
+      UI.bindState.proceed = false;
     }
   });
 
@@ -26,8 +27,8 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
   // If the collection has Lapiz event wiring (an accessor such as a Dictionary)
   // the collection will automatically stay up to date with additions and
   // removals. To keep thecontents up to date, also use live.
-  $L.UI.attribute("repeat", function(node, _, collection){
-    var templator = $L.UI.bindState.templator;
+  UI.attribute("repeat", function(node, _, collection){
+    var templator = UI.bindState.templator;
     if (collection === undefined){
       throw("Expected collection, got: " + collection);
     }
@@ -43,7 +44,7 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
     var fn = function(key, val){
       var clone = nodeTemplate.cloneNode(true);
       index[key] = clone;
-      $L.UI.bind(clone, val, templator);
+      UI.bind(clone, val, templator);
       parent.insertBefore(clone, end);
     };
     if (collection.each instanceof Function){
@@ -53,7 +54,7 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
     }
 
     if (collection.on !== undefined){
-      if (collection.on.insert !== undefined){
+      if ($L.typeCheck.func(collection.on.insert)){
         insFn = function(key, accessor){
           var clone = nodeTemplate.cloneNode(true);
           var keys = accessor.keys;
@@ -67,15 +68,15 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
           }
 
           index[key] = clone;
-          $L.UI.bind(clone, accessor(key));
+          UI.bind(clone, accessor(key));
         };
         collection.on.insert(insFn);
-        Lapiz.UI.on.remove(parent, function(){
+        UI.on.remove(parent, function(){
           collection.on.insert.deregister(insFn);
         });
       }
 
-      if (collection.on.remove !== undefined){
+      if ($L.typeCheck.func(collection.on.remove)){
         delFn = function(key, obj, accessor){
           var n = index[key];
           delete index[key];
@@ -87,20 +88,20 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
         });
       }
 
-      if (collection.on.change !== undefined && delFn !== undefined && insFn !== undefined){
+      if ($L.typeCheck.func(collection.on.change) && delFn && insFn){
         chgFn = function(key, obj, accessor){
           delFn(key, obj, accessor);
-          insFn(key, obj, accessor);
+          insFn(key, accessor);
         }
         collection.on.change(chgFn);
-        Lapiz.UI.on.remove(parent, function(){
+        UI.on.remove(parent, function(){
           collection.on.change.deregister(chgFn);
         });
       }
     }
 
     node.parentNode.removeChild(node);
-    $L.UI.bindState.proceed = false;
+    UI.bindState.proceed = false;
   }); //End Repeat attribute
 
   // > attribute:live
@@ -109,13 +110,13 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
   // If no attribute is used, it will default to the context.
   // When the .on.change event fires the template will be updated.
   var _liveNodes = new WeakMap();
-  $L.UI.attribute("live", function(node, context, altCtx){
+  UI.attribute("live", function(node, context, altCtx){
     var ctx = altCtx || context;
     var fn;
-    if (ctx.hasOwnProperty("on") && ctx.on.hasOwnProperty("change")  && !_liveNodes.get(node)){
+    if ( L.typeCheck.nested(ctx, "on", "change", "func") && !_liveNodes.get(node)){
       _liveNodes.set(node, true);
       fn = function(){
-        $L.UI.bind(node);
+        UI.bind(node);
       };
       ctx.on.change(fn);
       Lapiz.UI.on.remove(node, function(){
@@ -124,7 +125,7 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
     }
   });
 
-  $L.UI.attribute({
+  UI.attribute({
     // > attribute:click
     // > <htmlNode click="$ctxFn">...</htmlNode>
     // The given function will be called with the node is clicked.
@@ -192,7 +193,7 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
   // The form mediator will search up the node tree until it finds
   // a form node. All elements with a name will be added to the
   // formData.
-  $L.UI.mediator("form", function(node, _, fn){
+  UI.mediator("form", function(node, _, fn){
     var form;
     return function(evt){
       if (form === undefined){
@@ -205,7 +206,7 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
   });
 
   var _hash = $L.Map();
-  $L.UI.attribute("hash", function(node){
+  UI.attribute("hash", function(node){
     var hash = node.getAttribute("hash");
     node.removeAttribute("hash");
     node.setAttribute("href", "#" + hash);
@@ -213,7 +214,7 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
 
   // > Lapiz.UI.hash(hash, fn, ctx)
   // > Lapiz.UI.hash(hash, renderString)
-  $L.UI.hash = function(hash, fn, ctx){
+  UI.hash = function(hash, fn, ctx){
     var args = Array.prototype.slice.call(arguments);
     if (args.length === 0){
       throw new Error("Hash requires at least one arg");
@@ -222,16 +223,16 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
     var fn = args[0];
     var ctx = args[1];
     if (args.length === 0){
-      Lapiz.each(hash, function(key, val){
+      Lapiz.each(hash, function(val, key){
         if (Array.isArray(val) && val.length == 2){
-          $L.UI.hash(key, val[0], val[1]);
+          UI.hash(key, val[0], val[1]);
         } else {
-          $L.UI.hash(key, val);
+          UI.hash(key, val);
         }
       });
     } else if (typeof(args[0]) === "string"){
       _hash[hash] = function(){
-        $L.UI.render.apply(this, args);
+        UI.render.apply(this, args);
       };
     } else if (typeof(args[0]) === "function"){
       _hash[hash] = fn;
@@ -246,7 +247,7 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
     }
   });
 
-  $L.UI.on.loaded(function(){
+  UI.on.loaded(function(){
     var args = document.location.hash.substr(1).split("/");
     var hash = args.shift();
     if (_hash[hash] !== undefined){ _hash[hash].apply(this, args); }
@@ -254,7 +255,7 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
 
   // > Lapiz.UI.mediator.viewMethod
   // Useful mediator for attaching generic methods available to views.
-  $L.UI.mediator("viewMethod", function viewMethod(node, ctx, methd){
+  UI.mediator("viewMethod", function viewMethod(node, ctx, methd){
     //Todo:
     // - accept multiple view methods
     // - get name from function
@@ -274,7 +275,7 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
 
   // > attribute:q
   // Quick method for defining class, id and attributes
-  $L.UI.attribute("q", function(node, _, attrVal){
+  UI.attribute("q", function(node, _, attrVal){
     var cls, attr, id;
     var clsVals = [node.className];
     if (clsVals[0] === ''){ clsVals = []; }
@@ -297,7 +298,7 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
   });
 
   // > attribute:view
-  $L.UI.mediator("view", function(node, ctx, viewOrGenerator){
+  UI.mediator("view", function(node, ctx, viewOrGenerator){
     return function(){
       var view;
       var viewCtx;
@@ -308,15 +309,13 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
         view = viewOrGenerator;
         viewCtx = ctx;
       } else {
-        if (viewOrGenerator.hasOwnProperty("view")){
+        if (viewOrGenerator.view !== undefined){
           view = viewOrGenerator.view;
-          if (viewOrGenerator.hasOwnProperty("ctx")){
-            viewCtx = viewOrGenerator.ctx;
-          }
+          viewCtx = (viewOrGenerator.ctx === undefined) ? viewCtx : viewOrGenerator.ctx;
         }
         throw new Error("An invalid view was given or generated");
       }
-      $L.UI.render(view, viewCtx);
+      UI.render(view, viewCtx);
     };
   });
 
@@ -326,12 +325,12 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
   });
 
   // > attribute:selectVal
-  $L.UI.attribute("selectVal", function(node, ctx, val){
+  UI.attribute("selectVal", function(node, ctx, val){
     node.removeAttribute("selectVal");
     val = $L.parse.string(val);
-    $L.UI.bindState.after(function(){
+    UI.bindState.after(function(){
       var children = node.children;
-      $L.each(children, function(_, child){
+      $L.each(children, function(child){
         if (child.tagName === "OPTION" && child.value === val){
           child.selected = true;
           return true;

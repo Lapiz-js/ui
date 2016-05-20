@@ -90,9 +90,7 @@
     });
 
     Person.parseList = function(lst){
-      $L.each(lst, function(i, person){
-        Person(person);
-      });
+      $L.each(lst, Person);
     };
 
     Person.getRoleContext = function(role){

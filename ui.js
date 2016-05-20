@@ -22,14 +22,14 @@ Lapiz.Module("UI", ["Collections", "Events", "Template"], function($L){
   var _viewAttribute = 'l-view';
   // > l-view
   // Used to create a lapiz view:
-  // > <htmlNode l-view="viewName>...</htmlNode>
+  // > <htmlNode l-view="viewName">...</htmlNode>
   // All nodes in the document with this attribute will be cloned and saved and
   // the original will be removed from the document.
 
   // _loadViews is automatically invoked. It removes any node with the l-view
   // attribute and saves it as a view
   function _loadViews(){
-    $L.each(document.querySelectorAll('['+_viewAttribute+']'), function(i, node){
+    $L.each(document.querySelectorAll('['+_viewAttribute+']'), function(node){
       _views[node.attributes[_viewAttribute].value] = node;
       node.removeAttribute(_viewAttribute);
       node.remove();
@@ -64,9 +64,13 @@ Lapiz.Module("UI", ["Collections", "Events", "Template"], function($L){
   ui.meth(function attribute(name, fn, before){
     if (fn === undefined){
       //define plural
-      $L.each(name, Lapiz.UI.attribute)
+      $L.each(name, function(fn, name){
+        Lapiz.UI.attribute(name, fn);
+      });
       return;
     }
+    $L.typeCheck.string(name, "Attribute name must be a string");
+    $L.typeCheck.func(fn, "Second arg to attribute must be a function");
     name = name.toLocaleLowerCase();
     _attributes[name.toLowerCase()] = fn;
     if (before === undefined){
@@ -101,7 +105,7 @@ Lapiz.Module("UI", ["Collections", "Events", "Template"], function($L){
     var registerFn = function(propName, prop){
       if (prop === undefined){
         //defining many with an array
-        Lapiz.each(propName, function(key, val){
+        Lapiz.each(propName, function(val, key){
           properties[key] = val;
         });
         return;
@@ -215,7 +219,7 @@ Lapiz.Module("UI", ["Collections", "Events", "Template"], function($L){
       }
     }
 
-    $L.each(_after, function(i, fn){fn();});
+    $L.each(_after, function(fn){fn();});
 
     $L.UI.bindState = $L.UI.bindState.parent;
   });
@@ -260,7 +264,7 @@ Lapiz.Module("UI", ["Collections", "Events", "Template"], function($L){
   function _handleDeleteNode(node){
     var _props = _nodeProp.get(node);
     if (_props !== undefined && _props['onRemove'] !== undefined) {
-      $L.each(_props['onRemove'], function(i, fn){ fn(); });
+      $L.each(_props['onRemove'], function(fn){ fn(); });
     }
     var l = node.childNodes.length;
     var i;
