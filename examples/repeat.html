@@ -23,7 +23,7 @@
 
   <span l-view="sayHi" live>Hi, I'm $name ($role)</span>
 
-  <script type="text/javascript" src="../../../build/core.js"></script>
+  <script type="text/javascript" src="../../../build/lapiz.js"></script>
   <script type="text/javascript" src="../../template/template.js"></script>
   <script type="text/javascript" src="../ui.js"></script>
   <script type="text/javascript" src="../uiHelpers.js"></script>
@@ -71,16 +71,17 @@
     }, 4000);
   </script>
   <script type="text/javascript" id="application-logic">
-    var Person = Lapiz.Constructor(function(json){
-      this.priv.properties({
+    var Person = Lapiz.Class(function(json){
+      this.properties({
         "id"    : "int",
         "name"  : "string",
         "role"  : "string",
         "active": "bool",
       }, json);
+      return this.pub;
     });
     Person.parseList = function(lst){
-      Lapiz.each(lst, Person);
+      Lapiz.each(lst, function(person){ Person(person); });
     };
     Person.getRoleContext = function(role){
       return {
