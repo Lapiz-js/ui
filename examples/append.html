@@ -17,26 +17,28 @@
 
   <div l-view="foo" class="foo">$a</div>
   <div l-view="bar">$b</div>
-  <div l-view="baz">$c</div>
+  <l-view name="baz">$c</l-view>
 
-  <script type="text/javascript" src="../../../build/core.js"></script>
-  <script type="text/javascript" src="../../template/template.js"></script>
+  <script type="text/javascript" src="../../../build/lapiz.js"></script>
+  <script type="text/javascript" src="../../../build/template.js"></script>
   <script type="text/javascript" src="../ui.js"></script>
   <script type="text/javascript" src="../uiHelpers.js"></script>
   <script type="text/javascript">
-  /*
-  Demonstrates how render can append to a target.
-  The first render string will select a target in the document, all other render
-  strings will select a target in the view. Note that "baz>>" has no selector,
-  this indicates that it should append to the view, not a node within the view.
-  */
+  
+  // Demonstrates how render can append to a target.
+  // The first render string will select a target in the document, all other render
+  // strings will select a target in the view. Note that "baz>>" has no selector,
+  // this indicates that it should append to the view, not a node within the view.
+  // 
+  // Also note that baz uses an l-view tag so only the contents of the tag are
+  // appended.
 
   var ctx = {
     a:"Success 2 of 4",
     b:"Success 3 of 4",
     c:"Success 4 of 4"
   };
-  Lapiz.UI.render("foo >> #main", "bar >> div.foo","baz>>", ctx);
+  Lapiz.UI.render("foo >> #main", "bar >> div.foo", "baz>>", ctx);
   </script>
   </body>
 </html>

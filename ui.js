@@ -25,13 +25,31 @@ Lapiz.Module("UI", ["Collections", "Events", "Template"], function($L){
   // > <htmlNode l-view="viewName">...</htmlNode>
   // All nodes in the document with this attribute will be cloned and saved and
   // the original will be removed from the document.
+  //
+  // Any node with the l-view tag will also be cloned as a view, but only the
+  // children will be cloned, the node itself will be ommited. The node must
+  // have a name attribute
+  // > <l-view name="viewName">...</l-view>
 
   // _loadViews is automatically invoked. It removes any node with the l-view
   // attribute and saves it as a view
   function _loadViews(){
+    // clone nodes with l-view attribute
     $L.each(document.querySelectorAll('['+_viewAttribute+']'), function(node){
       _views[node.attributes[_viewAttribute].value] = node;
       node.removeAttribute(_viewAttribute);
+      node.remove();
+    });
+    // clone nodes with l-view tag
+    $L.each(document.querySelectorAll(_viewAttribute), function(node){
+      var df = document.createDocumentFragment();
+      var name = node.attributes["name"].value;
+      $L.assert(name !== "", "Got l-view tag without name");
+      _views[name] = df;
+      var cur;
+      for(cur = node.firstChild; cur !== null; cur = cur.nextSibling){
+        df.appendChild(cur);
+      }
       node.remove();
     });
   }
@@ -292,6 +310,7 @@ Lapiz.Module("UI", ["Collections", "Events", "Template"], function($L){
 
   function _splitRenderString(str){
     var idx = str.indexOf(">");
+    $L.assert(idx > -1, "Render string must contain >");
     var data = $L.Map();
     data.view = str.substr(0,idx).trim();
     data.append = false;
@@ -325,7 +344,7 @@ Lapiz.Module("UI", ["Collections", "Events", "Template"], function($L){
       if (i===0){
         target = document.querySelector(rend.selector);
         append = rend.append;
-        view = document.createDocumentFragment()
+        view = document.createDocumentFragment();
         view.appendChild(Lapiz.UI.CloneView(rend.view));
         Lapiz.UI.bind(view, ctx, Lapiz.Template.Std.templator);
       } else {

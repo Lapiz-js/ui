@@ -27,8 +27,8 @@
     <div>Role: $role</div>
   </div>
 
-  <script type="text/javascript" src="../../../build/core.js"></script>
-  <script type="text/javascript" src="../../template/template.js"></script>
+  <script type="text/javascript" src="../../../build/lapiz.js"></script>
+  <script type="text/javascript" src="../../../build/template.js"></script>
   <script type="text/javascript" src="../ui.js"></script>
   <script type="text/javascript" src="../uiHelpers.js"></script>
   
@@ -75,24 +75,21 @@
     }, 4000);
   </script>
   <script type="text/javascript" id="application-logic">
-    var Person = $L.Constructor(function(json){
-      var priv = this.priv;
-      var self = this;
-
-      priv.properties({
+    var Person = $L.Index.Class(function(json){
+      this.properties({
         "id": "int",
         "name": "string",
         "role": "string",
         "active": "bool",
       }, json);
 
-      this.sayHi = function sayHi(){
-        $L.UI.render("sayHi>#sayhi", self);
-      };
+      this.meth($L.tis(self.pub, function sayHi(){
+        $L.UI.render("sayHi>#sayhi", this);
+      }));
     });
 
     Person.parseList = function(lst){
-      $L.each(lst, Person);
+      $L.each(lst, function(person){ Person(person); });
     };
 
     Person.getRoleContext = function(role){
@@ -102,7 +99,6 @@
       }
     };
 
-    $L.Index(Person);
     Person.admins = Person.Filter("role", "admin");
     Person.editors = Person.Filter("role", "editor");
     Person.parseList(people);

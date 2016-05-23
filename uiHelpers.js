@@ -16,6 +16,21 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
     }
   });
 
+  // > attribute:ifNot
+  // > <htmlNode ifNot="$ctxVal">...</htmlNode>
+  // If the attrVal ($ctxVal above) evaluates to true, the node and it's
+  // children are removed. If the attribute is a function it will be invoked
+  // with no arguments and the return value will be evaluated as a boolean
+  UI.attribute("ifNot", function(node, _, attrVal){
+    if (typeof(attrVal) === "function") {attrVal = attrVal();}
+    node.removeAttribute("ifNot");
+    if (attrVal){
+      var parent = node.parentNode;
+      parent.removeChild(node);
+      UI.bindState.proceed = false;
+    }
+  });
+
   // > attribute:repeat
   // Takes a collection (array, map or accessor) and repeats the node for every
   // item in the collection.
