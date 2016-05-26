@@ -389,18 +389,6 @@ Lapiz.Module("UI", ["Collections", "Events", "Template", "Errors"], function($L)
     }).observe(document.body, { childList: true, subtree:true });
   });
 
-  function _handleDeleteNode(node){
-    var _props = _nodeProp.get(node);
-    if (_props !== undefined && _props['onRemove'] !== undefined) {
-      $L.each(_props['onRemove'], function(fn){ fn(); });
-    }
-    var l = node.childNodes.length;
-    var i;
-    for(i=0; i<l; i+=1){
-      _handleDeleteNode(node.childNodes[i]);
-    }
-  }
-
   // > Lapiz.UI.on.remove(node, fn)
   // When the document is removed, fn will be called.
   function remove(node, fn){
@@ -417,6 +405,17 @@ Lapiz.Module("UI", ["Collections", "Events", "Template", "Errors"], function($L)
     }
     $L.remove(_props['onRemove'], fn);
   }});
+  function _handleDeleteNode(node){
+    var _props = _nodeProp.get(node);
+    if (_props !== undefined && _props['onRemove'] !== undefined) {
+      $L.each(_props['onRemove'], function(fn){ fn(); });
+    }
+    var l = node.childNodes.length;
+    var i;
+    for(i=0; i<l; i+=1){
+      _handleDeleteNode(node.childNodes[i]);
+    }
+  }
 
   _eventNamespace.meth(remove);
 
@@ -531,6 +530,10 @@ Lapiz.Module("UI", ["Collections", "Events", "Template", "Errors"], function($L)
       node = doc.querySelector(node);
     }
     $L.typeCheck(node, Node, "First argument to Lapiz.UI.getStyle must be node or valid selector string");
-    return doc[docView].getComputedStyle(node, pseudoElt).getPropertyValue(property);
+    var style;
+    try {
+      style = doc[docView].getComputedStyle(node, pseudoElt).getPropertyValue(property);
+    } catch(err){}
+    return style;
   })
 });
