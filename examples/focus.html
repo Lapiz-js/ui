@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Focus Example</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+      [l-view]{
+        display: none;
+      }
+    </style>
+  </head>
+<body>
+
+  <div id="main">
+    FAILED
+  </div>
+
+  <l-view name="test"><input type="text" focus /></l-view>
+
+  <script type="text/javascript" src="../../../build/lapiz.js"></script>
+  <script type="text/javascript" src="../../../build/template.js"></script>
+  <script type="text/javascript" src="../ui.js"></script>
+  <script type="text/javascript" src="../uiHelpers.js"></script>
+  <script type="text/javascript">
+
+  Lapiz.UI.render("test > #main");
+  </script>
+  </body>
+</html>

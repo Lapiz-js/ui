@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Live Example</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+      [l-view]{
+        display: none;
+      }
+    </style>
+  </head>
+<body>
+
+  <div id="main">
+    Testing
+  </div>
+
+  <div l-view="foo" live>Test 1: <span value="$a">$a</span>, $b</div>
+  <div l-view="bar">Test 2: <span live value="$a">$a</span>, <span live value="$b">$b</span></div>
+
+  <script type="text/javascript" src="../../../build/lapiz.js"></script>
+  <script type="text/javascript" src="../../../build/template.js"></script>
+  <script type="text/javascript" src="../ui.js"></script>
+  <script type="text/javascript" src="../uiHelpers.js"></script>
+  <script type="text/javascript">
+
+  var ctx = Lapiz.Object(function(){
+    this.properties({
+      "a":"string",
+      "b":"string",
+    },{
+      "a": "A",
+      "b": "B"
+    });
+  }).pub;
+  Lapiz.UI.render("foo >> #main", ctx);
+  Lapiz.UI.render("bar >> #main", ctx);
+
+  setTimeout(function(){
+    ctx.a = "Apple";
+  }, 1000);
+
+  setTimeout(function(){
+    ctx.b = "Banana";
+  }, 1500);
+  </script>
+  </body>
+</html>

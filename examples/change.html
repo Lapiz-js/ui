@@ -14,8 +14,8 @@
   <div l-view="live" live>$bar</div>
   <div l-view="notLive">$bar</div>
 
-  <script type="text/javascript" src="../../../build/core.js"></script>
-  <script type="text/javascript" src="../../template/template.js"></script>
+  <script type="text/javascript" src="../../../build/lapiz.js"></script>
+  <script type="text/javascript" src="../../../build/template.js"></script>
   <script type="text/javascript" src="../ui.js"></script>
   <script type="text/javascript" src="../uiHelpers.js"></script>
   <script type="text/javascript">
@@ -30,10 +30,18 @@
   listeners (foo.priv.fire.change.length) after a 100ms delay.
   */
 
-    var Foo = Lapiz.Constructor(function(bar){
-      this.priv.properties({
+    var Foo = Lapiz.Class(function(bar){
+      this.properties({
         bar: "string"
-      }, this.priv.argDict());
+      }, Lapiz.argDict());
+      var self = this;
+      setTimeout(function(){
+        if (self.fire.change.length === 0){
+          document.getElementById("main").innerHTML = "success";
+        } else {
+          document.getElementById("main").innerHTML = "failed to remove";
+        }
+      }, 2100);
     });
 
     var foo = Foo("Init");
@@ -50,14 +58,6 @@
     setTimeout(function(){
       document.getElementById("main").innerHTML = "removing";
     }, 2000);
-
-    setTimeout(function(){
-      if (foo.priv.fire.change.length === 0){
-        document.getElementById("main").innerHTML = "success";
-      } else {
-        document.getElementById("main").innerHTML = "failed to remove";
-      }
-    }, 2100);
   </script>
   </body>
 </html>

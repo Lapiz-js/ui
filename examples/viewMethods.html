@@ -12,25 +12,39 @@
 <body>
   <div id="main"></div>
   <div l-view="test">
-    <div display="viewMethod.A">A</div>
-    <div display="viewMethod.B">B</div>
+    <div log="viewMethod.A">A</div>
+    <div log="viewMethod.B">B</div>
+    <div log="viewMethod.doesNotExist">C</div>
   </div>
 
-  <script type="text/javascript" src="../../../build/core.js"></script>
-  <script type="text/javascript" src="../../template/template.js"></script>
+  <script type="text/javascript" src="../../../build/lapiz.js"></script>
+  <script type="text/javascript" src="../../../build/template.js"></script>
   <script type="text/javascript" src="../ui.js"></script>
   <script type="text/javascript" src="../uiHelpers.js"></script>
 
   <script type="text/javascript">
+    Lapiz.Err.logTo = console;
+
+    Lapiz.UI.attribute(function log(node, ctx, val){
+      if (Lapiz.typeCheck.func(val)){
+        console.log("Func: "+val());
+      } else {
+        console.log(val);
+      }
+    });
+
     Lapiz.UI.mediator.viewMethod("A", function(){
-      console.log("A");
+      return "A";
     });
 
     Lapiz.UI.mediator.viewMethod("B", function(){
-      console.log("B");
+      return "B"
     });
 
-    Lapiz.UI.render("test > #main");
+    // viewMethod.doesNotExist should evaluate to "viewMethod.doesNotExist"
+    // because there is no mediator for doesNotExist.
+
+    Lapiz.UI.render("test > #main", {"foo": "bar"});
   </script>
   </body>
 </html>

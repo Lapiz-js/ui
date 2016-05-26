@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Repeat Test</title>
+    <title>With Attribute Example</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <style type="text/css">
       [l-view]{
@@ -13,24 +13,24 @@
 
   <div id="main"></div>
 
-  <ul l-view="list">
-    <li repeat="$$" age="$Age">$Name</li>
-  </ul>
+  <div l-view="foo" class="foo">
+    $a
+    <span with="$subCtx">$b</span>
+  </div>
 
   <script type="text/javascript" src="../../../build/lapiz.js"></script>
   <script type="text/javascript" src="../../../build/template.js"></script>
   <script type="text/javascript" src="../ui.js"></script>
   <script type="text/javascript" src="../uiHelpers.js"></script>
-
   <script type="text/javascript">
-    var $L = Lapiz;
 
-    $L.UI.render("list>#main",[
-      {Name: "Adam", Age: 30},
-      {Name: "Alex", Age: 26},
-      {Name: "Lauren", Age: 28},
-      {Name: "Stephen", Age: 29}
-    ]);
+  var ctx = {
+    "a":"A",
+    "subCtx":{
+      "b":"B"
+    }
+  };
+  Lapiz.UI.render("foo > #main", ctx);
   </script>
   </body>
 </html>

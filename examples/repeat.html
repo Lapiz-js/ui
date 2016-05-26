@@ -17,14 +17,16 @@
   <div l-view="people">
     <h1 capitalizeFirstLetter>Role: $role</h1>
     <ul>
-      <li id="$id" repeat="$people" click="view.sayHi" live>$name</li>
+      <li id="$id" repeat="$people" live>
+        <span display="viewMethod.log" click="view.sayHi">$name</span>
+      </li>
     </ul>
   </div>
 
   <span l-view="sayHi" live>Hi, I'm $name ($role)</span>
 
   <script type="text/javascript" src="../../../build/lapiz.js"></script>
-  <script type="text/javascript" src="../../template/template.js"></script>
+  <script type="text/javascript" src="../../../build/template.js"></script>
   <script type="text/javascript" src="../ui.js"></script>
   <script type="text/javascript" src="../uiHelpers.js"></script>
 
@@ -95,6 +97,10 @@
     Person.parseList(people);
   </script>
   <script type="text/javascript" id="display-logic">
+
+    Lapiz.UI.mediator.viewMethod("log", function(node, ctx) {
+      console.log("LOG: ", ctx.id, ctx.role);
+    })
 
     Lapiz.UI.mediator.view("sayHi", "sayHi > #sayHi");
 

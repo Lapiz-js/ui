@@ -22,8 +22,8 @@
 
   <span l-view="sayHi">Hi, I'm $name</span>
 
-  <script type="text/javascript" src="../../../build/core.js"></script>
-  <script type="text/javascript" src="../../template/template.js"></script>
+  <script type="text/javascript" src="../../../build/lapiz.js"></script>
+  <script type="text/javascript" src="../../../build/template.js"></script>
   <script type="text/javascript" src="../ui.js"></script>
   <script type="text/javascript" src="../uiHelpers.js"></script>
 
@@ -58,32 +58,31 @@
     }];
 
     setTimeout(function(){
-      Person.get(6).delete();
+      Person.get(6).del();
     }, 2000);
   </script>
   <script type="text/javascript" id="application-logic">
-    var Person = $L.Constructor(function(json){
-      var priv = this.priv;
+    var Person = $L.Index.Class(function(json){
       var self = this;
 
-      priv.properties({
+      self.properties({
         "id": "int",
         "name": "string",
         "role": "string",
         "active": "bool",
       }, json);
 
-      this.sayHi = function sayHi(){
-        $L.UI.render("sayHi>#sayhi", self);
-      };
+      this.meth(function sayHi(){
+        $L.UI.render("sayHi>#sayhi", self.pub);
+      });
 
-      this.delete = function(){
-        priv.fire.delete(self);
-      };
+      this.meth(function del(){
+        self.fire.delete(self.pub);
+      });
     });
 
     Person.parseList = function(lst){
-      $L.each(lst, Person);
+      $L.each(lst, function(person){Person(person);});
     };
 
     Person.getRoleContext = function(role){
@@ -92,8 +91,6 @@
         people: Person.Filter("role", role)
       }
     };
-
-    $L.Index(Person);
 
     Person.parseList(people);
   </script>

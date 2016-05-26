@@ -13,26 +13,31 @@
   <span l-view="price" currency="$currency" price="$price" resolver="currency.USD" live>$price</span>
   <div id="main">FAIL</div>
 
-  <script type="text/javascript" src="../../../build/core.js"></script>
-  <script type="text/javascript" src="../../template/template.js"></script>
+  <script type="text/javascript" src="../../../build/lapiz.js"></script>
+  <script type="text/javascript" src="../../../build/template.js"></script>
   <script type="text/javascript" src="../ui.js"></script>
   <script type="text/javascript" src="../uiHelpers.js"></script>
 
-  <script type="text/javascript">
-    Lapiz.UI.mediator("currency", function(_, _, resolverFn){
-      return resolverFn;
+  <script type="text/javascript" id="displayLogic">
+    //Create a mediator for currency, passes in the resovler from the bindState
+    Lapiz.UI.mediator("currency", function(node, ctx, resolverFn){
+      return resolverFn(Lapiz.UI.bindState.templator.resolver);
     });
 
-    Lapiz.UI.mediator.currency("USD", function(token, ctx){
-      var ret = Lapiz.Template.Std.resolver(token, ctx);
-      if (typeof(ret) === "number") {
-        ret = "$" + ret.toFixed(2);
+    // Takes in one resolver and returns another, this allows us to chain
+    // resolvers.
+    Lapiz.UI.mediator.currency("USD", function(parentResolver){
+      return function(token, ctx){
+        var ret = parentResolver(token, ctx);
+        if (typeof(ret) === "number") {
+          ret = "$" + ret.toFixed(2);
+        }
+        return ret;
       }
-      return ret;
     });
 
   </script>
-  <script type="text/javascript">
+  <script type="text/javascript" id="applicationLogic">
     var e = Lapiz.Event();
     var ctx = {
       currency: "dollars",

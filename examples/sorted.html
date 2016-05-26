@@ -23,8 +23,8 @@
 
   <span l-view="sayHi" live>Hi, I'm $name</span>
 
-  <script type="text/javascript" src="../../../build/core.js"></script>
-  <script type="text/javascript" src="../../template/template.js"></script>
+  <script type="text/javascript" src="../../../build/lapiz.js"></script>
+  <script type="text/javascript" src="../../../build/template.js"></script>
   <script type="text/javascript" src="../ui.js"></script>
   <script type="text/javascript" src="../uiHelpers.js"></script>
 
@@ -73,7 +73,7 @@
   <script type="text/javascript" id="application-logic">
     var $L = Lapiz;
 
-    var Person = $L.Constructor(function(json){
+    var Person = $L.Index.Class(function(json){
       var priv = this.priv;
       var self = this;
 
@@ -99,8 +99,6 @@
         people: Person.Filter("role", role)
       }
     };
-
-    $L.Index(Person);
 
     Person.parseList(people);
   </script>

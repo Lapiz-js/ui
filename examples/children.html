@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Children Example</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+      [l-view]{
+        display: none;
+      }
+    </style>
+  </head>
+<body>
+
+  <div id="nodeChildren">
+    child 1
+    <span id="child2">child 2</span>
+    child 3
+  </div>
+
+  
+  <script type="text/javascript" src="../../../build/lapiz.js"></script>
+  <script type="text/javascript" src="../../../build/template.js"></script>
+  <script type="text/javascript" src="../ui.js"></script>
+  <script type="text/javascript" src="../uiHelpers.js"></script>
+  <script type="text/javascript">
+    // the builtin node.children ignores the next nodes
+    console.log(Lapiz.UI.id("nodeChildren").children.length);
+    console.log(Lapiz.UI.Children("nodeChildren").length);
+  
+  </script>
+  </body>
+</html>

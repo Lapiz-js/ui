@@ -16,8 +16,8 @@
 
   <span l-view="counter" count="$people"></span>
 
-  <script type="text/javascript" src="../../../build/core.js"></script>
-  <script type="text/javascript" src="../../template/template.js"></script>
+  <script type="text/javascript" src="../../../build/lapiz.js"></script>
+  <script type="text/javascript" src="../../../build/template.js"></script>
   <script type="text/javascript" src="../ui.js"></script>
   <script type="text/javascript" src="../uiHelpers.js"></script>
 
@@ -41,7 +41,7 @@
     var invocations = 0;
     Lapiz.UI.attribute("count", function(node, _, collection){
       var fn = function(){
-        var l = collection.len;
+        var l = collection.length;
         node.innerHTML = l
         invocations += 1;
       };

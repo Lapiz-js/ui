@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Append View Example</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+      [l-view]{
+        display: none;
+      }
+    </style>
+  </head>
+<body>
+
+  <div id="main"></div>
+
+  <div l-view="A" id="A" display="viewMethod.testRemove">A</div>
+  <div l-view="B" id="B">B</div>
+
+  <script type="text/javascript" src="../../../build/lapiz.js"></script>
+  <script type="text/javascript" src="../../../build/template.js"></script>
+  <script type="text/javascript" src="../ui.js"></script>
+  <script type="text/javascript" src="../uiHelpers.js"></script>
+  <script type="text/javascript">
+
+  Lapiz.UI.render("A > #main");
+  
+  </script>
+  </body>
+</html>

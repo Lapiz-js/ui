@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Render View</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+      [l-view]{
+        display: none;
+      }
+    </style>
+  </head>
+<body>
+
+  <div id="main">
+    Success 1 of 5
+  </div>
+
+  <div l-view="foo" class="foo">
+    $a
+    <render name="$b"></render>
+    <render name="baz"></render>
+    <render if="$bool" name="glorp"></render>
+    <render ifNot="$bool" name="fail"></render>
+  </div>
+
+  <div l-view="bar">Success 3 of 5</div>
+
+  <l-view name="baz">$c <br></l-view>
+  <l-view name="glorp">Success 5 of 5</l-view>
+  <l-view name="fail">Failed!</l-view>
+
+  <script type="text/javascript" src="../../../build/lapiz.js"></script>
+  <script type="text/javascript" src="../../../build/template.js"></script>
+  <script type="text/javascript" src="../ui.js"></script>
+  <script type="text/javascript" src="../uiHelpers.js"></script>
+  <script type="text/javascript">
+  
+  // Demonstrates how render can append to a target.
+  // The first render string will select a target in the document, all other render
+  // strings will select a target in the view. Note that "baz>>" has no selector,
+  // this indicates that it should append to the view, not a node within the view.
+  // 
+  // Also note that baz uses an l-view tag so only the contents of the tag are
+  // appended.
+
+  var ctx = {
+    a:"Success 2 of 5",
+    b:"bar",
+    c:"Success 4 of 5",
+    bool: true,
+  };
+  Lapiz.UI.render("foo >> #main", ctx);
+  </script>
+  </body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Repeat Test</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+      [l-view]{
+        display: none;
+      }
+    </style>
+  </head>
+<body>
+
+  <div id="main"></div>
+
+  <div l-view="people">
+    <ul>
+      <li id="$id" repeat="$$" live>$name</li>
+    </ul>
+  </div>
+
+  <script type="text/javascript" src="../../../build/lapiz.js"></script>
+  <script type="text/javascript" src="../../../build/template.js"></script>
+  <script type="text/javascript" src="../ui.js"></script>
+  <script type="text/javascript" src="../uiHelpers.js"></script>
+
+  <script type="text/javascript" id="simulate-network">
+    var $L = Lapiz;
+    // Pretend this came from the server over ajax
+    var people = [{
+      id: 5,
+      name: "Stephen",
+      role: "admin",
+      active: true
+    },{
+      id: 6,
+      name: "Adam",
+      role: "admin",
+      active: true
+    },{
+      id: 7,
+      name: "Lauren",
+      role: "editor",
+      active: true
+    },{
+      id: 9,
+      name: "Alex",
+      role: "editor",
+      active: false
+    },{
+      id: 15,
+      name: "Chris",
+      role: "admin",
+      active: false
+    }];
+  </script>
+  <script type="text/javascript" id="application-logic">
+    var Person = Lapiz.Index.Class(function(json){
+      this.properties({
+        "id"    : "int",
+        "name"  : "string",
+        "role"  : "string",
+        "active": "bool",
+      }, json);
+      var self = this;
+      this.meth("delete", function(){
+        self.fire.delete(self.pub);
+      });
+      return this.pub;
+    });
+    Person.parseList = function(lst){
+      Lapiz.each(lst, function(person){ Person(person); });
+    };
+
+    Person.parseList(people);
+  </script>
+  <script type="text/javascript" id="display-logic">
+    $L.UI.render("people > #main", Person.all.Sort("name"));
+
+    setTimeout(function(){
+      Person.get(7).delete();
+    },2000);
+  </script>
+  </body>
+</html>

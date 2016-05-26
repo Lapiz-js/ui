@@ -24,12 +24,6 @@
     };
   });
 
-
-  $L.UI.mutateAttribute("with", function(node, _, attrVal){
-    node._context = attrVal;
-    $L.UI.mutate(node);
-  });
-
   $L.UI.resolverAttribute = function(name, resolverFactory){
     Lapiz.UI.tokenAttribute(name, function(node, ctx, val){
       return Lapiz.UI.Tokenizer(resolverFactory(node, ctx, val));
