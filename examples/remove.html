@@ -12,6 +12,7 @@
 <body>
 
   <div id="main"></div>
+  <div id="other"></div>
 
   <div l-view="A">FOO: <div id="$id" display="viewMethod.testRemove">$id</div></div>
   <div l-view="B" id="B">B</div>
@@ -29,25 +30,13 @@
   });
 
   Lapiz.UI.render("A > #main", {"id": "A1"});
-
-  function getRoot(node){
-    for(;node.parentNode !== null; node = node.parentNode){}
-    return node;
-  }
-
   setTimeout(function(){
-    var n = Lapiz.UI.id("A1");
-    console.log(getRoot(n));
     Lapiz.UI.render("A > #main", {"id": "A2"});
-    console.log(getRoot(n));
   }, 1000);
 
-  var df = document.createDocumentFragment();
   setTimeout(function(){
     var n = Lapiz.UI.id("A2");
-    console.log(getRoot(n));
-    df.appendChild(n);
-    console.log(getRoot(n));
+    Lapiz.UI.id("other").appendChild(n);
     //Lapiz.UI.render("B > #main");
   },2000);
   

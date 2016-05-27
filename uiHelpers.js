@@ -372,10 +372,8 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
   // > attribute:focus
   // Causes this element to recieve focus when a view is rendered
   UI.attribute("focus", function(node, ctx, val){
-    // I'm not thrilled with this solution, but I haven't been able to find
-    // anything better.
-    setTimeout(function(){
+    $L.UI.on.add(node, function(){
       node.focus();
-    }, 10);
+    });
   });
 });

@@ -374,23 +374,53 @@ Lapiz.Module("UI", ["Collections", "Events", "Template", "Errors"], function($L)
   $L.Event.linkProperty(_eventNamespace.namespace, "loaded", _initEvent);
 
   document.addEventListener("DOMContentLoaded", function(){
+    // The MutationObserver watches for changes to the document. When a mutation
+    // happens we track which were 
+    new MutationObserver(function(mutations) {
+      var added = [];
+      var removed = [];
+      var moved = [];
+      mutations.forEach(function(mutation) {
+        var l = mutation.removedNodes.length;
+        var i, node, idx;
+        for(i=0; i<l; i+=1){
+          node = mutation.removedNodes[i];
+          idx = added.indexOf(node);
+          if (idx === -1){
+            removed.push(node);
+          } else {
+            added.splice(idx, 1);
+            moved.push(node);
+          }
+        }
+        l = mutation.addedNodes.length; 
+        for(i=0; i<l; i+=1){
+          node = mutation.addedNodes[i];
+          idx = removed.indexOf(node);
+          if (idx === -1){
+            added.push(node);
+          } else {
+            removed.splice(idx, 1);
+            moved.push(node);
+          }
+        }
+      });
+      $L.each(removed, function(node){
+        _handleDeleteNode(node);
+      });
+      $L.each(added, function(node){
+        _handleAddNode(node);
+      });
+      
+    }).observe(document.body, { childList: true, subtree:true });
+
     _loadViews();
     _init = true;
     _initEvent.fire();
-
-    new MutationObserver(function(mutations) {
-      mutations.forEach(function(mutation) {
-        var l = mutation.removedNodes.length;
-        var i;
-        for(i=0; i<l; i+=1){
-          _handleDeleteNode(mutation.removedNodes[i]);
-        }
-      });
-    }).observe(document.body, { childList: true, subtree:true });
   });
 
   // > Lapiz.UI.on.remove(node, fn)
-  // When the document is removed, fn will be called.
+  // When the node is removed from the document, fn will be called.
   function remove(node, fn){
     var _props = _getProperties(node);
     if (_props['onRemove'] === undefined) {
@@ -408,7 +438,7 @@ Lapiz.Module("UI", ["Collections", "Events", "Template", "Errors"], function($L)
   function _handleDeleteNode(node){
     var _props = _nodeProp.get(node);
     if (_props !== undefined && _props['onRemove'] !== undefined) {
-      $L.each(_props['onRemove'], function(fn){ fn(); });
+      $L.each(_props['onRemove'], function(fn){ fn(node); });
     }
     var l = node.childNodes.length;
     var i;
@@ -417,7 +447,69 @@ Lapiz.Module("UI", ["Collections", "Events", "Template", "Errors"], function($L)
     }
   }
 
+  // > Lapiz.UI.on.add(node, fn)
+  // When the node is added to the document, fn will be called.
+  function add(node, fn){
+    var _props = _getProperties(node);
+    if (_props['onAdd'] === undefined) {
+      _props['onAdd'] = [];
+    }
+    _props['onAdd'].push(fn);
+  }
+  Object.defineProperty(add, "deregister", { value: function(node, fn){
+    var _props = _getProperties(node);
+    if (_props['onAdd'] === undefined) {
+      return;
+    }
+    $L.remove(_props['onAdd'], fn);
+  }});
+  function _handleAddNode(node){
+    var _props = _nodeProp.get(node);
+    if (_props !== undefined && _props['onAdd'] !== undefined) {
+      $L.each(_props['onAdd'], function(fn){
+        fn(node);
+      });
+    }
+    var l = node.childNodes.length;
+    var i;
+    for(i=0; i<l; i+=1){
+      _handleAddNode(node.childNodes[i]);
+    }
+  }
+
+  // > Lapiz.UI.on.move(node, fn)
+  // When the node is moved with in the document, fn will be called.
+  function move(node, fn){
+    var _props = _getProperties(node);
+    if (_props['onMove'] === undefined) {
+      _props['onMove'] = [];
+    }
+    _props['onMove'].push(fn);
+  }
+  Object.defineProperty(move, "deregister", { value: function(node, fn){
+    var _props = _getProperties(node);
+    if (_props['onMove'] === undefined) {
+      return;
+    }
+    $L.remove(_props['onMove'], fn);
+  }});
+  function _handleMoveNode(node){
+    var _props = _nodeProp.get(node);
+    if (_props !== undefined && _props['onMove'] !== undefined) {
+      $L.each(_props['onMove'], function(fn){
+        fn(node);
+      });
+    }
+    var l = node.childNodes.length;
+    var i;
+    for(i=0; i<l; i+=1){
+      _handleMoveNode(node.childNodes[i]);
+    }
+  }
+
   _eventNamespace.meth(remove);
+  _eventNamespace.meth(add);
+  _eventNamespace.meth(move);
 
   function _splitRenderString(str){
     var idx = str.indexOf(">");
