@@ -46,22 +46,19 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
   // If the collection has Lapiz event wiring (an accessor such as a Dictionary)
   // the collection will automatically stay up to date with additions and
   // removals. To keep thecontents up to date, also use live.
-  UI.attribute("repeat", function(node, _, collection){
+  UI.attribute("repeat", function(templateNode, _, collection){
     var templator = UI.bindState.templator;
-    if (collection === undefined){
-      throw("Expected collection, got: " + collection);
-    }
+    $L.assert(collection !== undefined, "Expected collection, got: " + collection)
     var insFn, delFn;
     var index = $L.Map();
-    var parent = node.parentNode;
+    var parent = templateNode.parentNode;
 
-    var end = node.ownerDocument.createComment("end of repeat");
-    parent.insertBefore(end, node);
-    node.removeAttribute("repeat");
+    var end = templateNode.ownerDocument.createComment("end of repeat");
+    parent.insertBefore(end, templateNode);
+    templateNode.removeAttribute("repeat");
 
-    var nodeTemplate = node.cloneNode(true); // it may be possible to do this without making a copy.
     var fn = function(val, key){
-      var clone = nodeTemplate.cloneNode(true);
+      var clone = templateNode.cloneNode(true);
       index[key] = clone;
       UI.bind(clone, val, templator);
       parent.insertBefore(clone, end);
@@ -75,7 +72,7 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
     if (collection.on !== undefined){
       if ($L.typeCheck.func(collection.on.insert)){
         insFn = function(key, accessor){
-          var clone = nodeTemplate.cloneNode(true);
+          var clone = templateNode.cloneNode(true);
           var keys = accessor.keys;
           var i = keys.indexOf(key);
 
@@ -103,7 +100,7 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
         };
         collection.on.remove(delFn);
         Lapiz.UI.on.remove(parent, function(){
-          collection.on.insert.deregister(delFn);
+          collection.on.remove.deregister(delFn);
         });
       }
 
@@ -120,7 +117,7 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
     }
 
     //node.parentNode.removeChild(node);
-    node.remove();
+    templateNode.remove();
     UI.bindState.proceed = false;
   }); //End Repeat attribute
 
