@@ -96,7 +96,7 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
       }
 
       if ($L.typeCheck.func(collection.on.remove)){
-        delFn = function(key, obj, accessor){
+        delFn = function(key, accessor, oldObj){
           var n = index[key];
           delete index[key];
           n.parentNode.removeChild(n);
