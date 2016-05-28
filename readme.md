@@ -13,3 +13,9 @@ Maybe repeat should be before if so the if applies to the children, it's easy to
 
 ###TODO: Make if work with live
 It should preserve the node so and check if it needs to attach it
+
+###TODO: Repeat Edge Case
+The unbind action is tied to the parent, so if the user renders something new into the parent, the document gets very confused.
+
+###TODO: BUG with live
+I had this issue when I put a live attr on a form, every time the live triggered an update, it re-register the form submit. So the form would sumbmit some number of times equal to the total number of changes.

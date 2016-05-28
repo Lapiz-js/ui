@@ -47,6 +47,7 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
   // the collection will automatically stay up to date with additions and
   // removals. To keep thecontents up to date, also use live.
   UI.attribute("repeat", function(templateNode, _, collection){
+    //TODO: Lapiz.UI.bindState.firstPass
     var templator = UI.bindState.templator;
     $L.assert(collection !== undefined, "Expected collection, got: " + collection)
     var insFn, delFn;
@@ -106,7 +107,9 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
 
       if ($L.typeCheck.func(collection.on.change) && delFn && insFn){
         chgFn = function(key, accessor, oldVal){
-          delFn(key, accessor, oldVal);
+          // I'm not sure this is a good check, it may be indicitive of a
+          // deeper problem.
+          if (index[key] !== undefined) {delFn(key, accessor, oldVal);}
           insFn(key, accessor);
         }
         collection.on.change(chgFn);
@@ -148,35 +151,35 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
     // The given function will be called with the node is clicked.
     "click": function(node, _, fn){
       if (typeof(fn) !== "function") { $L.Err.throw("Expected function"); }
-      node.addEventListener("click", fn);
+      $L.UI.bindState.firstPass && node.addEventListener("click", fn);
     },
     // > attribute:display
     // > <htmlNode display="$ctxFn">...</htmlNode>
     // The given function will be called with the node is first displayed.
     "display": function(node, ctx, fn){
       if (typeof(fn) !== "function") { $L.Err.throw("Expected function"); }
-      fn(node,ctx);
+      $L.UI.bindState.firstPass && fn(node,ctx);
     },
     // > attribute:blur
     // > <htmlNode blur="$ctxFn">...</htmlNode>
     // The given function will be called with the node loses focus.
     "blur": function(node, _, fn){
       if (typeof(fn) !== "function") { $L.Err.throw("Expected function"); }
-      node.addEventListener("blur", fn);
+      $L.UI.bindState.firstPass && node.addEventListener("blur", fn);
     },
     // > attribute:submit
     // > <htmlNode submit="$ctxFn">...</htmlNode>
     // The given function will be called when the submit event fires.
     "submit": function(node, _, fn){
       if (typeof(fn) !== "function") { $L.Err.throw("Expected function"); }
-      node.addEventListener("submit", fn);
+      $L.UI.bindState.firstPass && node.addEventListener("submit", fn);
     },
     // > attribute:change
     // > <htmlNode submit="$ctxFn">...</htmlNode>
     // The given function will be called when the change event fires.
     "change": function(node, _, fn){
       if (typeof(fn) !== "function") { $L.Err.throw("Expected function"); }
-      node.addEventListener("change", fn);
+      $L.UI.bindState.firstPass && node.addEventListener("change", fn);
     }
   });
 
@@ -190,11 +193,16 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
 
   function _getFormValues (form) {
     var nameQuery = form.querySelectorAll("[name]");
-    var i, n;
+    var i, n, nodeType;
     var data = $L.Map();
     for(i=nameQuery.length-1; i>=0; i-=1){
       n = nameQuery[i];
-      data[ n.name ] = n.value;
+      nodeType = n.type;
+      if ( nodeType === "checkbox" || nodeType === "radio"){
+        data[ n.name ] = n.checked;
+      } else {
+        data[ n.name ] = n.value;
+      }
     }
     return data;
   }

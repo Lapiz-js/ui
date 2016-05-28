@@ -275,6 +275,17 @@ Lapiz.Module("UI", ["Collections", "Events", "Template", "Errors"], function($L)
 
     _props = _getProperties(node);
 
+    // > Lapiz.UI.bindState.firstPass
+    // The bind operation may run several times during the life span of a node
+    // for various update operations. This property will indicate if this is the
+    // first pass binding.
+    if (_props['firstPass'] === undefined){
+      _props['firstPass'] = false;
+      $L.set($L.UI.bindState, 'firstPass', true);
+    } else {
+      $L.set($L.UI.bindState, 'firstPass', false);
+    }
+
     // > Lapiz.UI.bindState.ctx
     // Initially, this is set to the ctx that is resolved for the binding
     // operationg. If it is changed by attribute, that will become the context
