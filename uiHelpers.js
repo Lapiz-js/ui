@@ -181,6 +181,10 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
       if (typeof(fn) !== "function") { $L.Err.throw("Expected function"); }
       $L.UI.bindState.firstPass && node.addEventListener("change", fn);
     },
+    // > attribute:isChecked
+    // > <htmlNode isChecked="$boolVal">...</htmlNode>
+    // Will set the checked attribute. If combined with live, will keep the
+    // checked status up to date.
     "isChecked": function(node, ctx, bool){
       node.checked = !!bool;
     }
@@ -230,8 +234,18 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
       if (form === undefined){
         form = _getForm(node);
       }
-      if (!fn(_getFormValues(form), form, ctx) && evt && evt.preventDefault){
+      var preventDefault = true;
+      var err = false;
+      try {
+        preventDefault = !fn(_getFormValues(form), form, ctx);
+      } catch(e){
+        err = e;
+      }
+      if ( preventDefault && evt && evt.preventDefault){
         evt.preventDefault();
+      }
+      if (err){
+        $L.Err.throw(err);
       }
     };
   });
