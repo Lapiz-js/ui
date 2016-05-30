@@ -14,10 +14,16 @@
     </style>
   </head>
 <body>
-  <form id="form">
-    <div><label>Name</label><input id="name" name="name" type="text" /></div>
-    <div><label>Role</label><input name="role" type="text" /></div>
-    <div><label>CheckBox</label><input name="A" type="checkbox" id='A' />A <input name="B" type="checkbox" />B</div>
+
+  <div id="main"></div>
+
+  <form l-view="form" live>
+    <div><label>Name</label><input value="$name" name="name" type="text" /></div>
+    <div><label>Role</label><input value="$role" name="role" type="text" /></div>
+    <div><label>CheckBox</label>
+      <input name="A" type="checkbox" isChecked="$A" />A
+      <input name="B" type="checkbox" isChecked="$B" />B
+    </div>
     <div><label>Notes</label><textarea name="notes"></textarea></div>
     <div><label>&nbsp;</label>
       <button click="form.sayBye">Cancel</button>
@@ -32,7 +38,7 @@
 
   <script type="text/javascript">
     var $L = Lapiz;
-    var A = $L.UI.id("A");
+
     $L.UI.mediator.form("sayHi", function(form){
       console.log(form);
       console.log("Hi, my name is " + form['name']);
@@ -42,9 +48,25 @@
       console.log("Goodbye, " + form['name']);
     });
 
-    $L.UI.on.loaded(function(){
-      $L.UI.bind($L.UI.id("form"));
-    });
+    var ctx = Lapiz.Object(function(){
+      this.properties({
+        "name": "string",
+        "role": "string",
+        "A": "bool",
+        "B": "bool"
+      },{
+        "name": "Adam",
+        "role": "admin",
+        "A": false,
+        "B": false
+      });
+    }).pub;
+
+    $L.UI.render("form > #main", ctx);
+
+    setTimeout(function(){
+      ctx.A = true;
+    }, 1000)
   </script>
   </body>
 </html>

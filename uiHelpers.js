@@ -180,6 +180,9 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
     "change": function(node, _, fn){
       if (typeof(fn) !== "function") { $L.Err.throw("Expected function"); }
       $L.UI.bindState.firstPass && node.addEventListener("change", fn);
+    },
+    "isChecked": function(node, ctx, bool){
+      node.checked = !!bool;
     }
   });
 
