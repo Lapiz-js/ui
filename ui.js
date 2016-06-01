@@ -143,7 +143,7 @@ Lapiz.Module("UI", ["Collections", "Events", "Template", "Errors"], function($L)
 
   var _mediators = $L.Map();
   // > Lapiz.UI.mediator(mediatorName,fn)
-  // > Lapiz.UI.mediator(mediators)
+  // > Lapiz.UI.mediator(namedMediatorFn)
   // Mediators are a pattern to provide reusable code. Mediators can only be
   // used as an attribute value and always follow the pattern of two words
   // seperated by a period, or more exactly:
@@ -189,8 +189,16 @@ Lapiz.Module("UI", ["Collections", "Events", "Template", "Errors"], function($L)
           // named function
           prop = propName;
           propName = prop.name;
+        } else if ($L.typeCheck.array(propName)){
+          //defining many with an array of named funcs
+          Lapiz.each(propName, function(fn){
+            $L.typeCheck.func(fn, "On "+mediatorName+" found value in array that is not a function");
+            $L.assert(fn.name !== '', "On "+mediatorName+" found unnamed function in array");
+            properties[fn.name] = fn;
+          });
+          return;
         } else {
-          //defining many with an array
+          //defining many with an object
           Lapiz.each(propName, function(val, key){
             properties[key] = val;
           });

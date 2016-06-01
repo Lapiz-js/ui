@@ -39,14 +39,14 @@
   <script type="text/javascript">
     var $L = Lapiz;
 
-    $L.UI.mediator.form("sayHi", function(form){
-      console.log(form);
-      console.log("Hi, my name is " + form['name']);
-    });
-
-    $L.UI.mediator.form("sayBye", function(form){
-      console.log("Goodbye, " + form['name']);
-    });
+    $L.UI.mediator.form([
+      function sayHi(form){
+        console.log("Hi, my name is " + form['name']);
+      },
+      function sayBye(form){
+        console.log("Goodbye, " + form['name']);
+      }
+    ]);
 
     var ctx = Lapiz.Object(function(){
       this.properties({
