@@ -21,12 +21,20 @@
   <script type="text/javascript" id="displayLogic">
     //Create a mediator for currency, passes in the resovler from the bindState
     Lapiz.UI.mediator("currency", function(node, ctx, resolverFn){
-      return resolverFn(Lapiz.UI.bindState.templator.resolver);
+      return resolverFn(node, ctx);
     });
+
+    /*
+    it would also be possible here to use the built-in resolver mediator as
+    something like:
+    resovler.currencyUSD
+    */
 
     // Takes in one resolver and returns another, this allows us to chain
     // resolvers.
-    Lapiz.UI.mediator.currency("USD", function(parentResolver){
+    Lapiz.UI.mediator.currency("USD", function(node, ctx){
+      // necessary closure
+      var parentResolver = Lapiz.UI.bindState.templator.resolver;
       return function(token, ctx){
         var ret = parentResolver(token, ctx);
         if (typeof(ret) === "number") {

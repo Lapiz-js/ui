@@ -1,8 +1,28 @@
 Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
   var UI = $L.UI;
 
-  $L.UI.attribute("with", function(node, oldCtx, newCtx){
-    $L.UI.bindState.ctx = newCtx;
+  // > attribute:resolver
+  // > <tag resolver="$resolver">...</tag>
+  // Takes the current tokenizer and the tokenizer assigned and creates a new
+  // templator that will be used on all attributes processed after this and all
+  // child nodes. By default, resolver is the first attribute evaluated.
+  UI.attribute("resolver", function(node, ctx, resolver){
+    var templator = $L.Template.Templator(UI.bindState.templator.tokenizer, resolver);
+    UI.bindState.templator = templator;
+  });
+
+  // > attribute:templator
+  // > <tag templator="$templator">...</tag>
+  // Takes the current tokenizer and the tokenizer assigned and creates a new
+  // templator that will be used on all attributes processed after this and all
+  // child nodes. By default, templator is the second attribute evaluated only
+  // after resolver.
+  UI.attribute("templator", function(node, ctx, templator){
+    UI.bindState.templator = templator;
+  });
+
+  UI.attribute("with", function(node, oldCtx, newCtx){
+    UI.bindState.ctx = newCtx;
   });
 
   // > attribute:if
@@ -151,35 +171,35 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
     // The given function will be called with the node is clicked.
     "click": function(node, _, fn){
       if (typeof(fn) !== "function") { $L.Err.throw("Expected function"); }
-      $L.UI.bindState.firstPass && node.addEventListener("click", fn);
+      UI.bindState.firstPass && node.addEventListener("click", fn);
     },
     // > attribute:display
     // > <htmlNode display="$ctxFn">...</htmlNode>
     // The given function will be called with the node is first displayed.
     "display": function(node, ctx, fn){
       if (typeof(fn) !== "function") { $L.Err.throw("Expected function"); }
-      $L.UI.bindState.firstPass && fn(node,ctx);
+      UI.bindState.firstPass && fn(node,ctx);
     },
     // > attribute:blur
     // > <htmlNode blur="$ctxFn">...</htmlNode>
     // The given function will be called with the node loses focus.
     "blur": function(node, _, fn){
       if (typeof(fn) !== "function") { $L.Err.throw("Expected function"); }
-      $L.UI.bindState.firstPass && node.addEventListener("blur", fn);
+      UI.bindState.firstPass && node.addEventListener("blur", fn);
     },
     // > attribute:submit
     // > <htmlNode submit="$ctxFn">...</htmlNode>
     // The given function will be called when the submit event fires.
     "submit": function(node, _, fn){
       if (typeof(fn) !== "function") { $L.Err.throw("Expected function"); }
-      $L.UI.bindState.firstPass && node.addEventListener("submit", fn);
+      UI.bindState.firstPass && node.addEventListener("submit", fn);
     },
     // > attribute:change
     // > <htmlNode submit="$ctxFn">...</htmlNode>
     // The given function will be called when the change event fires.
     "change": function(node, _, fn){
       if (typeof(fn) !== "function") { $L.Err.throw("Expected function"); }
-      $L.UI.bindState.firstPass && node.addEventListener("change", fn);
+      UI.bindState.firstPass && node.addEventListener("change", fn);
     },
     // > attribute:isChecked
     // > <htmlNode isChecked="$boolVal">...</htmlNode>
@@ -369,9 +389,14 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
     };
   });
 
-  // > attribute:resolver
+  // > mediator:resolver
   Lapiz.UI.mediator("resolver", function(node, ctx, resolverFn){
     return resolverFn(node, ctx);
+  });
+
+  // > mediator:templator
+  Lapiz.UI.mediator("templator", function(node, ctx, templatorFn){
+    return templatorFn(node, ctx);
   });
 
   // > attribute:selectVal
@@ -394,7 +419,7 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
   // > attribute:focus
   // Causes this element to recieve focus when a view is rendered
   UI.attribute("focus", function(node, ctx, val){
-    $L.UI.on.add(node, function(){
+    UI.on.add(node, function(){
       node.focus();
     });
   });
