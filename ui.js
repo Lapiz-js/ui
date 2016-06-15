@@ -82,6 +82,7 @@ Lapiz.Module("UI", ["Collections", "Events", "Template", "Errors"], function($L)
     //TODO: this could use some work
     var div = document.createElement("div");
     div.innerHTML = viewStr;
+    //TODO: this should use $L.UI.Children
     var node = div.childNodes[0];
     _views[name] = node;
     node.remove();

@@ -23,13 +23,8 @@
   <script type="text/javascript" src="../uiHelpers.js"></script>
   <script type="text/javascript">
   
-  // Demonstrates how render can append to a target.
-  // The first render string will select a target in the document, all other render
-  // strings will select a target in the view. Note that "baz>>" has no selector,
-  // this indicates that it should append to the view, not a node within the view.
-  // 
-  // Also note that baz uses an l-view tag so only the contents of the tag are
-  // appended.
+  // Demonstrates how a templator can be used to format data while still
+  // protecting against injection.
 
 
   var linkRe = /(https?:\/\/[^\s]+)/g;
@@ -39,34 +34,38 @@
     return function(template, ctx){
       var ret = parentTemplator(template, ctx);
       if (Lapiz.typeCheck.string(ret)){
-        ret = ret.split("\n");
-        if (ret.length === 1){
-          return ret[0];
-        }
-        var doc = document.createDocumentFragment();
-        Lapiz.each(ret, function(str, i){
-          var a;
-          str = str.split(linkRe);
-          Lapiz.UI.appendChild("textnode", doc).textContent = str.shift();
-          while(str.length > 0){
-            a = Lapiz.UI.appendChild("a", doc);
-            a.href = str.shift();
-            a.target = "_blank";
-            Lapiz.UI.appendChild("textnode", a).textContent = a.href;
-            Lapiz.UI.appendChild("textnode", doc).textContent = str.shift();
-          }
-          if (i<ret.length-1){
-            Lapiz.UI.appendChild("br", doc);
-          }
-        });
-        ret = doc;
+        ret = newlinesAndLinks_strToNodes(ret);
       }
       return ret;
     }
   })
 
+  function newlinesAndLinks_strToNodes(strs){
+    strs = strs.split("\n");
+    if (strs.length === 1 && strs.find(linkRe) === -1){
+      return strs[0];
+    }
+    var doc = document.createDocumentFragment();
+    Lapiz.each(strs, function(str, i){
+      var a;
+      str = str.split(linkRe);
+      Lapiz.UI.appendChild("textnode", doc).textContent = str.shift();
+      while(str.length > 0){
+        a = Lapiz.UI.appendChild("a", doc);
+        a.href = str.shift();
+        a.target = "_blank";
+        Lapiz.UI.appendChild("textnode", a).textContent = a.href;
+        Lapiz.UI.appendChild("textnode", doc).textContent = str.shift();
+      }
+      if (i<strs.length-1){
+        Lapiz.UI.appendChild("br", doc);
+      }
+    });
+    return doc;
+  }
+
   var ctx = {
-    'str' : "This is \n a test\nhttp://projects.adamcolton.net/lapiz/components/ui/examples/textnodeTemplator.html\nDone"
+    'str' : "This is \n a test\nhttp://projects.adamcolton.net/lapiz/components/ui/examples/textnodeTemplator.html\n<script src='stillPreventsInjection'><\/script>"
   };
 
   Lapiz.UI.render("foo > #main", ctx);
