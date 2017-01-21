@@ -19,3 +19,7 @@ The unbind action is tied to the parent, so if the user renders something new in
 
 ###TODO: BUG with live
 I had this issue when I put a live attr on a form, every time the live triggered an update, it re-register the form submit. So the form would sumbmit some number of times equal to the total number of changes.
+
+###TODO: Paginating Repeat
+Let's say I have a sorted accessor and I want to show the top 10 elements, how
+would I do that? What if I wanted to show 5 items per page and I'm on page 3.
