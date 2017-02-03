@@ -33,7 +33,7 @@
     var parentTemplator = Lapiz.UI.bindState.templator;
     return function(template, ctx){
       var ret = parentTemplator(template, ctx);
-      if (Lapiz.typeCheck.string(ret)){
+      if (Lapiz.typeCheck.str(ret)){
         ret = newlinesAndLinks_strToNodes(ret);
       }
       return ret;

@@ -71,7 +71,7 @@ Lapiz.Module("UI", ["Collections", "Events", "Template", "Errors"], function($L)
   // Returns an html Node that is a clone of the View.
   ui.meth(function CloneView(name){
     if (_views[name] === undefined){
-      $L.Err.throw("View "+name+" is not defined");
+      $L.Err.toss("View "+name+" is not defined");
     }
     return _views[name].cloneNode(true);
   });
@@ -94,7 +94,7 @@ Lapiz.Module("UI", ["Collections", "Events", "Template", "Errors"], function($L)
   // > Lapiz.UI.attribute(name, fn(node, ctx, attrVal), before)
   // > Lapiz.UI.attribute(attributes)
   ui.meth(function attribute(name, fn, before){
-    if (fn === undefined || $L.typeCheck.string(fn)){
+    if (fn === undefined || $L.typeCheck.str(fn)){
       if ($L.typeCheck.func(name)){
         $L.assert(name.name !== "", "Using a function as the first arg to Lapiz.UI.attribute requires a named function");
         before = fn;
@@ -108,7 +108,7 @@ Lapiz.Module("UI", ["Collections", "Events", "Template", "Errors"], function($L)
         return;
       }
     }
-    $L.typeCheck.string(name, "Attribute name must be a string");
+    $L.typeCheck.str(name, "Attribute name must be a string");
     $L.typeCheck.func(fn, "Second arg to attribute must be a function");
     name = name.toLocaleLowerCase();
     _attributes[name.toLowerCase()] = fn;
@@ -156,7 +156,7 @@ Lapiz.Module("UI", ["Collections", "Events", "Template", "Errors"], function($L)
       fn = mediatorName;
       mediatorName = fn.name;
     }
-    $L.typeCheck.string(mediatorName, "Mediator name must be a string");
+    $L.typeCheck.str(mediatorName, "Mediator name must be a string");
     $L.assert(_mediators[mediatorName] === undefined, "Attempting to redefine "+mediatorName+" mediator");
     var properties = $L.Map();
     _mediators[mediatorName] = {
@@ -172,7 +172,7 @@ Lapiz.Module("UI", ["Collections", "Events", "Template", "Errors"], function($L)
           // named function
           prop = propName;
           propName = prop.name;
-        } else if ($L.typeCheck.array(propName)){
+        } else if ($L.typeCheck.arr(propName)){
           //defining many with an array of named funcs
           Lapiz.each(propName, function(fn){
             $L.typeCheck.func(fn, "On "+mediatorName+" found value in array that is not a function");
@@ -189,7 +189,7 @@ Lapiz.Module("UI", ["Collections", "Events", "Template", "Errors"], function($L)
         }
       }
       if (typeof propName !== "string"){
-        $L.Err.throw("Mediator property name on "+mediatorName+" must be a string, got: "+(typeof propName));
+        $L.Err.toss("Mediator property name on "+mediatorName+" must be a string, got: "+(typeof propName));
       }
       properties[propName] = prop;
     };
@@ -255,12 +255,12 @@ Lapiz.Module("UI", ["Collections", "Events", "Template", "Errors"], function($L)
     // If an attribute set this to false, no further attributes will be bound
     // and the child nodes will not be processed. This is useful if an attribute
     // is removing a node.
-    $L.Map.setterGetter($L.UI.bindState, "proceed", true, "bool");
+    $L.set.setterGetter($L.UI.bindState, "proceed", true, "bool");
 
     // > Lapiz.UI.bindState.after(fn);
     // Adds a function that will be called after all attributes and child nodes
     // have been handled.
-    $L.Map.setterMethod($L.UI.bindState, function after(fn){
+    $L.set.setterMethod($L.UI.bindState, function after(fn){
       _after.push(fn);
     });
 
@@ -555,7 +555,7 @@ Lapiz.Module("UI", ["Collections", "Events", "Template", "Errors"], function($L)
       if (i===0){
         target = document.querySelector(rend.selector);
         if (target === null){
-          $L.Err.throw("Got null when selecting: "+rend.selector)
+          $L.Err.toss("Got null when selecting: "+rend.selector)
         }
         append = rend.append;
         view = document.createDocumentFragment();
@@ -569,7 +569,7 @@ Lapiz.Module("UI", ["Collections", "Events", "Template", "Errors"], function($L)
         }
         if (rend.target === null){
           test = view;
-          $L.Err.throw("Query selector could not match "+rend.selector);
+          $L.Err.toss("Query selector could not match "+rend.selector);
         }
         rend.view = $L.UI.CloneView(rend.view);
         $L.UI.bind(rend.view, ctx, Lapiz.Template.Std.templator);
@@ -603,7 +603,7 @@ Lapiz.Module("UI", ["Collections", "Events", "Template", "Errors"], function($L)
   // > Lapiz.UI.appendChild(childStr, parent)
   ui.meth(function appendChild(child, parent){
     parent = parent || document;
-    if ($L.typeCheck.string(child)){
+    if ($L.typeCheck.str(child)){
       child = child.toLowerCase();
       if (child === "textnode"){
         child = document.createTextNode("");
@@ -618,7 +618,7 @@ Lapiz.Module("UI", ["Collections", "Events", "Template", "Errors"], function($L)
   // > Lapiz.UI.empty(node)
   // > Lapiz.UI.empty(nodeId)
   ui.meth(function empty(node){
-    if ($L.typeCheck.string(node)){
+    if ($L.typeCheck.str(node)){
       node = document.getElementById(node);
     }
     $L.typeCheck(node, Node, "Lapiz.UI.empty requires either node or node ID");
@@ -640,7 +640,7 @@ Lapiz.Module("UI", ["Collections", "Events", "Template", "Errors"], function($L)
     doc = doc || document;
     docView = docView || 'defaultView';
     pseudoElt = pseudoElt || null;
-    if ($L.typeCheck.string(node)){
+    if ($L.typeCheck.str(node)){
       node = doc.querySelector(node);
     }
     $L.typeCheck(node, Node, "First argument to Lapiz.UI.getStyle must be node or valid selector string");
@@ -657,7 +657,7 @@ Lapiz.Module("UI", ["Collections", "Events", "Template", "Errors"], function($L)
   // the built-in node.children will leave out. Node can also be a document
   // fragment. If a selectorStr is used, it will be run against document.
   ui.meth(function Children(node){
-    if ($L.typeCheck.string(node)){
+    if ($L.typeCheck.str(node)){
       node = document.querySelector(node);
     }
     $L.typeCheck(node, Node, "Children requires node or node id");
