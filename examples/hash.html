@@ -33,16 +33,19 @@
     /*
     Hash events only fire when the location (hash) changes
     */
-    Lapiz.UI.hash("1", function(){
-      Lapiz.UI.render("one>#out");
-    });
-    Lapiz.UI.hash("2", "two>#out");
-    Lapiz.UI.hash("exc", "exc>>#out");
-    Lapiz.UI.hash("alert", function(msg){alert(msg);});
+    setTimeout(function(){ // add delay to simulate load delay
+      Lapiz.UI.hash("1", function(){
+        Lapiz.UI.render("one>#out");
+      });
+      Lapiz.UI.hash("2", "two>#out");
+      Lapiz.UI.hash("exc", "exc>>#out");
+      Lapiz.UI.hash("alert", function(msg){alert(msg);});
 
-    Lapiz.UI.on.loaded(function(){
-      Lapiz.UI.bind(Lapiz.UI.id("main"));
-    });
+      // this just replaces the hash attributes in main with hrefs
+      Lapiz.UI.on.loaded(function(){
+        Lapiz.UI.bind(Lapiz.UI.id("main"));
+      });
+    },100);
   </script>
   </body>
 </html>

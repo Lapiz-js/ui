@@ -2,9 +2,14 @@
   Lapiz.UI.View("test","<div id='test'>Test</div>");
   Lapiz.UI.View("test2","<div id='test2' click='$foo'>Test<span display=viewMethod.counter>foo</span><script>/*skips script tags*/</script></div>");
 
+  document.getElementsByTagName("body")[0].innerHTML += "<div l-view='inserted'>Inserted View</div>";
   var c=0;
   Lapiz.UI.mediator.viewMethod("counter", function(){
     c += 1;
+  });
+
+  Lapiz.Test("UI/InsertedView", function(t){
+    Lapiz.UI.CloneView("inserted").innerHTML === "Inserted View" || t.Error("Expected inserted view");
   });
 
   Lapiz.Test("UI/AppendView", function(t){

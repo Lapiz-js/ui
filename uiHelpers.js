@@ -287,6 +287,7 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
     var hash = args.splice(0,1)[0];
     var fn = args[0];
     var ctx = args[1];
+    //TODO: test this - pass in dict?
     if (args.length === 0){
       Lapiz.each(hash, function(val, key){
         if (Array.isArray(val) && val.length == 2){
@@ -295,12 +296,23 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
           UI.hash(key, val);
         }
       });
+      return;
     } else if (typeof(args[0]) === "string"){
       _hash[hash] = function(){
         UI.render.apply(this, args);
       };
     } else if (typeof(args[0]) === "function"){
       _hash[hash] = fn;
+    } else {
+      return;
+    }
+
+    // check if this matches the current hash
+    var urlHash = document.location.hash.substr(1).split("/");
+    if (hash == urlHash.shift()){
+      UI.on.loaded(function(){
+        _hash[hash].apply(this, urlHash);
+      });
     }
   };
 
@@ -310,12 +322,6 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
       var hash = args.shift();
       if (_hash[hash] !== undefined){ _hash[hash].apply(this, args); }
     }
-  });
-
-  UI.on.loaded(function(){
-    var args = document.location.hash.substr(1).split("/");
-    var hash = args.shift();
-    if (_hash[hash] !== undefined){ _hash[hash].apply(this, args); }
   });
 
   // > Lapiz.UI.mediator.viewMethod(viewMethodName, func(node, ctx, args...))
