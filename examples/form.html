@@ -20,6 +20,7 @@
   <form l-view="form" live>
     <div><label>Name</label><input value="$name" name="name" type="text" /></div>
     <div><label>Role</label><input value="$role" name="role" type="text" /></div>
+    <div><label>Role</label><input value="$age" parse="int" name="age" type="text" /></div>
     <div><label>CheckBox</label>
       <input name="A" type="checkbox" isChecked="$A" />A
       <input name="B" type="checkbox" isChecked="$B" />B
@@ -41,26 +42,30 @@
 
     $L.UI.mediator.form([
       function sayHi(form){
-        console.log("Hi, my name is " + form['name']);
+        console.log(form['age'], typeof(form['age']));
+        console.log(form['A'], typeof(form['A']));
+        console.log(form['name'], typeof(form['name']));
       },
       function sayBye(form){
         console.log("Goodbye, " + form['name']);
       }
     ]);
 
-    var ctx = Lapiz.Object(function(){
-      this.properties({
-        "name": "string",
-        "role": "string",
-        "A": "bool",
-        "B": "bool"
-      },{
-        "name": "Adam",
-        "role": "admin",
-        "A": false,
-        "B": false
-      });
-    }).pub;
+    var ctx = Lapiz.Obj();
+    ctx.properties({
+      "name": "string",
+      "role": "string",
+      "age": "int",
+      "A": "bool",
+      "B": "bool"
+    },{
+      "name": "Adam",
+      "role": "admin",
+      "age": 32,
+      "A": false,
+      "B": false
+    });
+    ctx = ctx.pub;
 
     $L.UI.render("form > #main", ctx);
 
