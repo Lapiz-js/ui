@@ -220,7 +220,7 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
 
   function _getFormValues (form) {
     var nameQuery = form.querySelectorAll("[name]");
-    var i, n, nodeType, parse;
+    var i, n, nodeType;
     var data = $L.Map();
     for(i=nameQuery.length-1; i>=0; i-=1){
       n = nameQuery[i];
@@ -228,12 +228,7 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
       if ( nodeType === "checkbox" || nodeType === "radio"){
         data[ n.name ] = n.checked;
       } else {
-        parse = n.getAttribute("parse");
-        if (parse != null){
-          data[ n.name ] = $L.parse(parse)(n.value);
-        } else{
-          data[ n.name ] = n.value;
-        }
+        data[ n.name ] = n.value;
       }
     }
     return data;
@@ -242,21 +237,17 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
   // > Lapiz.UI.mediator
   // Mediators are a way to attach generic logic to a view.
 
-  // > Lapiz.UI.mediator.form("formHandler", fn(formData, formNode, ctx));
+  // > Lapiz.UI.mediator.form
   /* >
     <form>
-      <input ... name="someName" />
-      <input ... name="someOtherName" parse="someParser" />
       ...
       <button click="form.formHandler">Go!</button>
     </form>
   */
-  // The form mediator will search up the node tree until it finds a form node.
-  // All elements with a name will be added to the formData. If the type is
-  // "checkbox" or "radio", a boolean will be added. For any other type a string
-  // will be added based on n.value unless the tag has a "parse" attribute. If
-  // it does have a parse attribute, that will be used to get a parser from
-  // Lapiz.parse which will be used against the form value.
+  // > Lapiz.UI.mediator.form("formHandler", fn(formData, formNode, ctx));
+  // The form mediator will search up the node tree until it finds
+  // a form node. All elements with a name will be added to the
+  // formData.
   UI.mediator("form", function(node, ctx, fn){
     var form;
     return function(evt){
@@ -383,6 +374,15 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
   // > <tag click="view.foo">Foo</tag>
   //
   // > Lapiz.UI.mediator.view("foo", "foo > #main");
+  // or
+  /* >
+  Lapiz.UI.mediator.view("foo", function(node, ctx){
+    return {
+      view: "someview > #string",
+      ctx: {"another": "context"}
+    };
+  });
+  */
   UI.mediator("view", function(node, ctx, viewOrGenerator){
     return function(){
       var view;
@@ -397,8 +397,9 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
         if (viewOrGenerator.view !== undefined){
           view = viewOrGenerator.view;
           viewCtx = (viewOrGenerator.ctx === undefined) ? viewCtx : viewOrGenerator.ctx;
+        } else{
+          $L.Err.toss("An invalid view was given or generated");
         }
-        $L.Err.toss("An invalid view was given or generated");
       }
       UI.render(view, viewCtx);
     };

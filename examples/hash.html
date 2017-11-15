@@ -39,9 +39,18 @@
       });
       Lapiz.UI.hash("2", "two>#out");
       Lapiz.UI.hash("exc", "exc>>#out");
-      Lapiz.UI.hash("alert", function(msg){alert(msg);});
 
-      // this just replaces the hash attributes in main with hrefs
+      // The first part of the hash is used for routing. The rest is split on
+      // "/" and all the parts are passed as arguments to the function. So
+      // "foo/bar/baz" would call the foo route and pass in 2 arguments, "bar"
+      // and "baz".
+      Lapiz.UI.hash("alert", function(msg){
+        alert(msg);
+      });
+
+      // Calling bind on #main causes Lapiz.UI to bind attributes (and if there
+      // were any template values, those would be rendered). In this case, it
+      // replaces the instances of hash with hrefs
       Lapiz.UI.on.loaded(function(){
         Lapiz.UI.bind(Lapiz.UI.id("main"));
       });

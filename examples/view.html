@@ -15,11 +15,13 @@
   <div id="details">Click a name for details</div>
 
   <div l-view="people">
-    <h1 capitalizeFirstLetter>Role: $role</h1>
+    <h1 click="view.clear" capitalizeFirstLetter>Role: $role</h1>
     <ul>
       <li id="$id" repeat="$people" click="view.personDetails" live>$name</li>
     </ul>
   </div>
+
+  <div l-view="message">$msg</div>
 
   <div l-view="details" live>
     <div>Name: $name</div>
@@ -63,33 +65,42 @@
     }];
 
     setTimeout(function(){
-      Person.get(6).name = "Adam";
+      Person.all(6).name = "Adam";
     }, 2000);
 
     setTimeout(function(){
-      Person.get(7).role = "admin";
+      Person.all(7).role = "admin";
     }, 3000);
 
     setTimeout(function(){
-      Person.get(15).role = "editor";
+      Person.all(15).role = "editor";
     }, 4000);
   </script>
   <script type="text/javascript" id="application-logic">
-    var Person = $L.Index.Class(function(json){
-      this.properties({
-        "id": "int",
+  var Person
+  Lapiz.Module("app.logic", ["Index"], function(){
+    Person = $L.Index.Cls(function(cls){
+      cls.properties({
+        "*id": "int",
         "name": "string",
         "role": "string",
         "active": "bool",
-      }, json);
+      });
 
-      this.meth($L.tis(self.pub, function sayHi(){
+      cls.constructor(function(attrs){
+        this.setMany(attrs);
+        this.meth(this.setMany);
+      });
+
+      cls.meth(function sayHi(){
         $L.UI.render("sayHi>#sayhi", this);
-      }));
-    });
+      });
+    },"id");
 
     Person.parseList = function(lst){
-      $L.each(lst, function(person){ Person(person); });
+      $L.each(lst, function(person){
+        Person(person);
+      });
     };
 
     Person.getRoleContext = function(role){
@@ -102,6 +113,7 @@
     Person.admins = Person.Filter("role", "admin");
     Person.editors = Person.Filter("role", "editor");
     Person.parseList(people);
+  });
   </script>
   <script type="text/javascript" id="display-logic">
 
@@ -116,6 +128,13 @@
 
     var admins = Person.getRoleContext("admin");
     $L.UI.render("people>#main", admins);
+
+    Lapiz.UI.mediator.view("clear", function(){
+      return {
+        "view": "message > #details",
+        "ctx": {"msg":"Click a name for details"},
+      }
+    });
 
   </script>
   </body>
