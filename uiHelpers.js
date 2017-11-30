@@ -170,35 +170,35 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
     // > <htmlNode click="$ctxFn">...</htmlNode>
     // The given function will be called with the node is clicked.
     "click": function(node, _, fn){
-      if (typeof(fn) !== "function") { $L.Err.toss("Expected function"); }
+      if (typeof(fn) !== "function") { $L.Err.toss("Attribute 'Click' expected function in:"+node.outerHTML); }
       UI.bindState.firstPass && node.addEventListener("click", fn);
     },
     // > attribute:display
     // > <htmlNode display="$ctxFn">...</htmlNode>
     // The given function will be called with the node is first displayed.
     "display": function(node, ctx, fn){
-      if (typeof(fn) !== "function") { $L.Err.toss("Expected function"); }
+      if (typeof(fn) !== "function") { $L.Err.toss("Attribute 'display' expected function in:"+node.outerHTML); }
       UI.bindState.firstPass && fn(node,ctx);
     },
     // > attribute:blur
     // > <htmlNode blur="$ctxFn">...</htmlNode>
     // The given function will be called with the node loses focus.
     "blur": function(node, _, fn){
-      if (typeof(fn) !== "function") { $L.Err.toss("Expected function"); }
+      if (typeof(fn) !== "function") { $L.Err.toss("Attribute 'blur' expected function in:"+node.outerHTML); }
       UI.bindState.firstPass && node.addEventListener("blur", fn);
     },
     // > attribute:submit
     // > <htmlNode submit="$ctxFn">...</htmlNode>
     // The given function will be called when the submit event fires.
     "submit": function(node, _, fn){
-      if (typeof(fn) !== "function") { $L.Err.toss("Expected function"); }
+      if (typeof(fn) !== "function") { $L.Err.toss("Attribute 'submit' expected function in:"+node.outerHTML); }
       UI.bindState.firstPass && node.addEventListener("submit", fn);
     },
     // > attribute:change
     // > <htmlNode submit="$ctxFn">...</htmlNode>
     // The given function will be called when the change event fires.
     "change": function(node, _, fn){
-      if (typeof(fn) !== "function") { $L.Err.toss("Expected function"); }
+      if (typeof(fn) !== "function") { $L.Err.toss("Attribute 'change' expected function in:"+node.outerHTML); }
       UI.bindState.firstPass && node.addEventListener("change", fn);
     },
     // > attribute:isChecked
