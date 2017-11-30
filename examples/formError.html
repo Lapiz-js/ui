@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Form UI Test</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+      label{
+        display: block;
+        float: left;
+        padding-right: 5px;
+        text-align: right;
+        width: 100px;
+      }
+    </style>
+  </head>
+<body>
+
+  <div id="main"></div>
+
+  <form l-view="form" live>
+    <div><label>Name</label><input value="$name" name="name" type="text" /></div>
+    <div><label>Role</label><input value="$role" name="role" type="text" /></div>
+    <div><label>Role</label><input value="$age" parse="int" name="age" type="text" /></div>
+    <div><label>CheckBox</label>
+      <input name="A" type="checkbox" isChecked="$A" />A
+      <input name="B" type="checkbox" isChecked="$B" />B
+    </div>
+    <div><label>Notes</label><textarea name="notes"></textarea></div>
+    <div><label>&nbsp;</label>
+      <button click="form.sayBye">Cancel</button>
+      <button click="form.notDefined">Save</button>
+    </div>
+  </form>
+
+  <script type="text/javascript" src="../../../build/lapiz.js"></script>
+  <script type="text/javascript" src="../../../build/template.js"></script>
+  <script type="text/javascript" src="../ui.js"></script>
+  <script type="text/javascript" src="../uiHelpers.js"></script>
+
+  <script type="text/javascript">
+    var $L = Lapiz;
+
+    $L.UI.mediator.form([
+      function sayHi(form){
+        console.log(form['age'], typeof(form['age']));
+        console.log(form['A'], typeof(form['A']));
+        console.log(form['name'], typeof(form['name']));
+      },
+      function sayBye(form){
+        console.log("Goodbye, " + form['name']);
+      }
+    ]);
+
+    var ctx = Lapiz.Obj();
+    ctx.properties({
+      "name": "string",
+      "role": "string",
+      "age": "int",
+      "A": "bool",
+      "B": "bool"
+    },{
+      "name": "Adam",
+      "role": "admin",
+      "age": 32,
+      "A": false,
+      "B": false
+    });
+    ctx = ctx.pub;
+
+    $L.UI.render("form > #main", ctx);
+
+    setTimeout(function(){
+      ctx.A = true;
+    }, 1000)
+  </script>
+  </body>
+</html>
