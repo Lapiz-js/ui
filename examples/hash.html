@@ -12,7 +12,7 @@
 <body>
 
   <div id="main">
-    <div id="out">Click a Link</div>
+    <div id="out"></div>
     <a hash="1">One</a>
     <a hash="2">Two</a>
     <a hash="exc">Append !</a>
@@ -23,6 +23,7 @@
   <span l-view="one">You clicked One</span>
   <span l-view="two">You clicked Two</span>
   <span l-view="exc">!</span>
+  <span l-view="home">Click a Link</span>
 
   <script type="text/javascript" src="../../../build/lapiz.js"></script>
   <script type="text/javascript" src="../../../build/template.js"></script>
@@ -46,6 +47,11 @@
       // and "baz".
       Lapiz.UI.hash("alert", function(msg){
         alert(msg);
+      });
+
+      // A blank hash will match a URL with no hash.
+      Lapiz.UI.hash("", function(msg){
+        Lapiz.UI.render("home>#out");
       });
 
       // Calling bind on #main causes Lapiz.UI to bind attributes (and if there
