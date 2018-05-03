@@ -21,6 +21,9 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
     UI.bindState.templator = templator;
   });
 
+  // > attribute:with
+  // > <tag with="$SubCtx">...</tag>
+  // Set the render context.
   UI.attribute("with", function(node, oldCtx, newCtx){
     UI.bindState.ctx = newCtx;
   });
@@ -65,11 +68,11 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
   */
   // If the collection has Lapiz event wiring (an accessor such as a Dictionary)
   // the collection will automatically stay up to date with additions and
-  // removals. To keep thecontents up to date, also use live.
+  // removals. To keep the contents up to date, also use live.
   UI.attribute("repeat", function(templateNode, _, collection){
     //TODO: Lapiz.UI.bindState.firstPass
     var templator = UI.bindState.templator;
-    $L.assert(collection !== undefined, "Expected collection, got: " + collection)
+    $L.assert(collection !== undefined, "Expected collection, got undefined")
     var insFn, delFn;
     var index = $L.Map();
     var parent = templateNode.parentNode;
@@ -127,7 +130,7 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
 
       if ($L.typeCheck.func(collection.on.change) && delFn && insFn){
         chgFn = function(key, accessor, oldVal){
-          // I'm not sure this is a good check, it may be indicitive of a
+          // I'm not sure this is a good check, it may be indicative of a
           // deeper problem.
           if (index[key] !== undefined) {delFn(key, accessor, oldVal);}
           insFn(key, accessor);
@@ -433,7 +436,7 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
   });
 
   // > attribute:focus
-  // Causes this element to recieve focus when a view is rendered
+  // Causes this element to receive focus when a view is rendered
   UI.attribute("focus", function(node, ctx, val){
     UI.on.add(node, function(){
       node.focus();
