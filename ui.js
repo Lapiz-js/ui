@@ -1,3 +1,6 @@
+// > .ModuleName "UI"
+// In addition to the documentation, the examples folder will provide a lot of
+// guidance in using this module.
 Lapiz.Module("UI", ["Collections", "Events", "Template", "Errors"], function($L){
   
   var ui = $L.Namespace();
@@ -37,10 +40,10 @@ Lapiz.Module("UI", ["Collections", "Events", "Template", "Errors"], function($L)
   // the original will be removed from the document.
   
   // > tag:l-view
-  // > <l-view name="viewName">...</l-view>
+  // > <l-view name="viewName">...</l-view>  
   // Any node with the l-view tag will also be cloned as a view, but only the
-  // children will be cloned, the node itself will be ommited. The node must
-  // have a name attribute
+  // children will be cloned, the node itself will be ommited, therefor
+  // attributes like 'with' will not work. The node must have a name attribute.
 
   // _loadViews is automatically invoked. It removes any node with the l-view
   // attribute and saves it as a view
@@ -332,7 +335,9 @@ Lapiz.Module("UI", ["Collections", "Events", "Template", "Errors"], function($L)
       if (node.tagName && node.tagName.toUpperCase() === "RENDER"){
         // > tag:render
         // > <render name="viewName"></render>
-        // Inserts a sub view. Contents of render will be wiped.
+        // Inserts a sub view. Contents of render will be wiped. The viewName
+        // can be dynamic, the result of either a tempator value or a mediator.
+        // Currently, the render tag will ignore all attributes.
         attrName = node.attributes.getNamedItem('name').value;
         i = $L.UI.CloneView(attrName);
         if (node.parentNode !== null){
@@ -533,7 +538,19 @@ Lapiz.Module("UI", ["Collections", "Events", "Template", "Errors"], function($L)
     return data;
   }
 
-  // > Lapiz.UI.render(renderString..., ctx);
+  // > Lapiz.UI.render(renderString..., ctx)
+  // > renderString: "viewName > target"
+  // > renderString append: "viewName >> target"  
+  // The renderString has three parts. The first part is the view name. The
+  // second part is either ">" which will replace the contents of the target or
+  // ">>" which will append to the target. The target is a CSS querySelector,
+  // but it will on render to the first match.
+  //
+  // When using multiple renderStrings, the first render string will select a
+  // target in the document, all other render strings will select a target in
+  // the view. Using "viewName>>" with no selector indicates that it should
+  // append to the view, not a node within the view, but will not work for the
+  // first renderString.
   ui.meth(function render(){
     if (!_init){
       var argsClsr = arguments;

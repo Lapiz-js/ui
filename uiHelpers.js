@@ -1,3 +1,9 @@
+// > .ModuleName "DefaultUIHelpers"
+// This module contains a set of default UI tools. It's important to note that
+// this module is seperate from the UI module, so it shows the extent of what
+// is possible without access to the internals of the UI mdoule. In addition to
+// the documentation, the examples folder will provide a lot of guidance in
+// using this module.
 Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
   var UI = $L.UI;
 
@@ -23,7 +29,9 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
 
   // > attribute:with
   // > <tag with="$SubCtx">...</tag>
-  // Set the render context.
+  // Set the render context. This changes the render context for the node and
+  // all children of the node. Can be combined with the render tag for reusable
+  // sub-views.
   UI.attribute("with", function(node, oldCtx, newCtx){
     UI.bindState.ctx = newCtx;
   });
@@ -238,7 +246,8 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
   }
 
   // > Lapiz.UI.mediator
-  // Mediators are a way to attach generic logic to a view.
+  // Mediators are a way to attach generic logic to a view. See
+  // [more](ui.js.md#Lapiz.UI.mediator)
 
   // > Lapiz.UI.mediator.form
   /* >
@@ -273,6 +282,11 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
     };
   });
 
+  // > attribute:hash
+  // Just a shorthand for adding hash links so
+  // > <a hash="foo">Foo</a>
+  // becomes
+  // > <a href="#foo">Foo</a>
   var _hash = $L.Map();
   UI.attribute("hash", function(node){
     var hash = node.getAttribute("hash");
@@ -282,6 +296,9 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
 
   // > Lapiz.UI.hash(hash, fn, ctx)
   // > Lapiz.UI.hash(hash, renderString)
+  // Registers a hash handler. When the hash in the url changes to match the
+  // given hash the function will be called or the renderString will be passed
+  // into render. A hash will be split on "/" as "hash/arg1/arg2/...".
   UI.hash = function(hash, fn, ctx){
     var args = Array.prototype.slice.call(arguments);
     if (args.length === 0){
@@ -328,6 +345,8 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
   });
 
   // > Lapiz.UI.mediator.viewMethod(viewMethodName, func(node, ctx, args...))
+  // > Lapiz.UI.mediator.viewMethod(namedFunc(node, ctx, args...))
+  // > Lapiz.UI.mediator.viewMethod({"viewMethodName":funcs(node, ctx, args...)...})
   // Useful mediator for attaching generic methods available to views.
   UI.mediator("viewMethod", function viewMethod(node, ctx, methd){
     $L.typeCheck.func(methd, "Mediator viewMethod expects a function");

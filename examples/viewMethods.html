@@ -14,7 +14,11 @@
   <div l-view="test">
     <div log="viewMethod.A">A</div>
     <div log="viewMethod.B">B</div>
-    <div log="viewMethod.doesNotExist">C</div>
+    <div log="viewMethod.C">C</div>
+    <div log="viewMethod.D">D</div>
+    <div log="viewMethod.E">E</div>
+    <div log="viewMethod.F">F</div>
+    <div log="viewMethod.doesNotExist">G</div>
   </div>
 
   <script type="text/javascript" src="../../../build/lapiz.js"></script>
@@ -37,8 +41,26 @@
       return "A";
     });
 
-    Lapiz.UI.mediator.viewMethod("B", function(){
+    Lapiz.UI.mediator.viewMethod(function B(){
       return "B"
+    });
+
+    Lapiz.UI.mediator.viewMethod([
+      function C(){
+        return "C"
+      },
+      function D(){
+        return "D"
+      }
+    ]);
+    
+    Lapiz.UI.mediator.viewMethod({
+      "E": function(){
+        return "E"
+      },
+      "F": function(){
+        return "F"
+      }
     });
 
     // viewMethod.doesNotExist should evaluate to "viewMethod.doesNotExist"

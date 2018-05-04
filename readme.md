@@ -23,3 +23,11 @@ I had this issue when I put a live attr on a form, every time the live triggered
 ###TODO: Paginating Repeat
 Let's say I have a sorted accessor and I want to show the top 10 elements, how
 would I do that? What if I wanted to show 5 items per page and I'm on page 3.
+
+###TODO: attrs on render tag
+Cannot use 'with' attr in a render tag. Probably can't use any attr in a render
+tag.
+
+###TODO: drop q stuff
+Maybe move it to another package, but it's not very useful and it's non-
+standard.
