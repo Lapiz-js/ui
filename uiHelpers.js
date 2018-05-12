@@ -231,15 +231,32 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
 
   function _getFormValues (form) {
     var nameQuery = form.querySelectorAll("[name]");
-    var i, n, nodeType;
+    var i, n, nodeType, val, d;
     var data = $L.Map();
     for(i=nameQuery.length-1; i>=0; i-=1){
       n = nameQuery[i];
       nodeType = n.type;
       if ( nodeType === "checkbox" || nodeType === "radio"){
-        data[ n.name ] = n.checked;
+        if (n.hasAttribute("value")){
+          if (!n.checked){
+            continue;
+          }
+          val = n.value;
+        } else{
+          val = n.checked;
+        }
       } else {
-        data[ n.name ] = n.value;
+        val = n.value;
+      }
+      if ($L.Map.has(data, n.name)){
+        d = data[ n.name ]
+        if ($L.typeCheck.arr(d)){
+          d.push(val);
+        } else {
+          data[ n.name ] = [d, val];
+        }
+      } else {
+        data[ n.name ] = val;
       }
     }
     return data;
@@ -259,7 +276,12 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
   // > Lapiz.UI.mediator.form("formHandler", fn(formData, formNode, ctx));
   // The form mediator will search up the node tree until it finds
   // a form node. All elements with a name will be added to the
-  // formData.
+  // formData. If more than one element has the same name, the value will be
+  // returned as a list.
+  //
+  // Checkboxes and radio buttons will return a boolean by default indicating
+  // if they are checked. But if they have a value attribute, they will use that
+  // and only include the value if they are checked.
   UI.mediator("form", function(node, ctx, fn){
     var form;
     return function(evt){

@@ -20,10 +20,22 @@
   <form l-view="form" live>
     <div><label>Name</label><input value="$name" name="name" type="text" /></div>
     <div><label>Role</label><input value="$role" name="role" type="text" /></div>
-    <div><label>Role</label><input value="$age" parse="int" name="age" type="text" /></div>
+    <div><label>Age</label><input value="$age" name="age" type="text" /></div>
     <div><label>CheckBox</label>
       <input name="A" type="checkbox" isChecked="$A" />A
-      <input name="B" type="checkbox" isChecked="$B" />B
+      <input name="B" type="checkbox" isChecked="$B" value="foo" />B
+    </div>
+    <div><label>List</label>
+      <input name="list" type="checkbox" value="I" />I
+      <input name="list" type="checkbox" value="II" />II
+      <input name="list" type="checkbox" value="III" />III
+      <input name="list" type="checkbox" value="IV" />IV
+      <input name="list" type="checkbox" value="V" />V
+    </div>
+    <div><label>Radio</label>
+      <input name="radio" type="radio" value="Rock" checked="checked" />Rock
+      <input name="radio" type="radio" value="Classic" />Classic
+      <input name="radio" type="radio" value="Talk" />Talk
     </div>
     <div><label>Notes</label><textarea name="notes"></textarea></div>
     <div><label>&nbsp;</label>
@@ -44,7 +56,10 @@
       function sayHi(form){
         console.log(form['age'], typeof(form['age']));
         console.log(form['A'], typeof(form['A']));
+        console.log(form['B'], typeof(form['B']));
         console.log(form['name'], typeof(form['name']));
+        console.log(form['list'], typeof(form['list']));
+        console.log(form['radio'], typeof(form['radio']));
       },
       function sayBye(form){
         console.log("Goodbye, " + form['name']);
