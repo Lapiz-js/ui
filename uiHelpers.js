@@ -80,7 +80,7 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
   UI.attribute("repeat", function(templateNode, _, collection){
     //TODO: Lapiz.UI.bindState.firstPass
     var templator = UI.bindState.templator;
-    $L.assert(collection !== undefined, "Expected collection, got undefined")
+    $L.assert(collection !== undefined, "Expected collection, got undefined: "+templateNode)
     var insFn, delFn;
     var index = $L.Map();
     var parent = templateNode.parentNode;
@@ -371,7 +371,7 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
   // > Lapiz.UI.mediator.viewMethod({"viewMethodName":funcs(node, ctx, args...)...})
   // Useful mediator for attaching generic methods available to views.
   UI.mediator("viewMethod", function viewMethod(node, ctx, methd){
-    $L.typeCheck.func(methd, "Mediator viewMethod expects a function");
+    $L.typeCheck.func(methd, "Mediator viewMethod expects a function: "+node);
     //Todo:
     // - accept multiple view methods
     // - get name from function
