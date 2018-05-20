@@ -73,15 +73,19 @@
     }, 4000);
   </script>
   <script type="text/javascript" id="application-logic">
-    var Person = Lapiz.Class(function(json){
-      this.properties({
+    var Person = Lapiz.Cls(function(cls){
+      cls.properties({
         "id"    : "int",
         "name"  : "string",
         "role"  : "string",
         "active": "bool",
-      }, json);
-      return this.pub;
+      });
+
+      cls.constructor(function(json){
+        this.setMany(json);
+      });
     });
+
     Person.parseList = function(lst){
       Lapiz.each(lst, function(person){ Person(person); });
     };
