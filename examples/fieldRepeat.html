@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Repeat Test</title>
+    <title>Change Field Repeat</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <style type="text/css">
       [l-view]{
@@ -12,18 +12,15 @@
 <body>
 
   <div id="main"></div>
-  <div id="sayHi">Click a name for them to say hello</div>
 
-  <div l-view="people">
-    <h1 capitalizeFirstLetter>Role: $role</h1>
+  <div l-view="person" live>
+    <h1 foo="bar">$name</h1>
+    <div>Role: $role</div>
+    <h2>Manages</h2>
     <ul>
-      <li id="$id" repeat="$people" live>
-        <span click="view.sayHi">$name</span>
-      </li>
+      <li repeat="$Subordinates">$name</li>
     </ul>
   </div>
-
-  <span l-view="sayHi" live>Hi, I'm $name ($role)</span>
 
   <l-view name="done">All Done</l-view>
   <l-view name="errDidNotDereg">Error: Did not correctly deregister</l-view>
@@ -32,7 +29,11 @@
   <script type="text/javascript" src="../../../build/template.js"></script>
   <script type="text/javascript" src="../ui.js"></script>
   <script type="text/javascript" src="../uiHelpers.js">
-    // This tests using the repeat attribute with a collection.
+    // This tests that when the meaning of $Subordinates changes the view
+    // updates correctly. Initially, Chris is not a manager and so only manages
+    // himself. When he becomes a manager, his subordinates change to all
+    // admins. When all the changes are done, #main is cleared to make sure the 
+    // event deregister correctly.
   </script>
 
   <script type="text/javascript" id="simulate-network">
@@ -65,41 +66,70 @@
       active: false
     }];
 
+    var chrisInitSub;
+
     setTimeout(function(){
-      Person.get(6).name = "Adam";
+      var chris = Person.get(15);
+      chrisInitSub = chris.Subordinates;
+      if (chrisInitSub.on.change.length !== 1){
+        console.error("Expected 1");
+      }
+      chris.Manager("admin")
     }, 500);
 
     setTimeout(function(){
+      if (chrisInitSub.on.change.length !== 0){
+        console.error("Expected 0");
+      }
       Person.get(7).role = "admin";
     }, 1000);
 
     setTimeout(function(){
-      Person.get(15).role = "editor";
+      Person.get(6).name = "Adam";
     }, 1500);
   </script>
   <script type="text/javascript" id="application-logic">
     var Person = Lapiz.Cls(function(cls){
       cls.properties({
-        "id"    : "int",
-        "name"  : "string",
-        "role"  : "string",
-        "active": "bool",
+        "*id"      : "int",
+        "name"    : "string",
+        "role"    : "string",
+        "active"  : "bool",
+        "*manages" : "string"
       });
 
       cls.constructor(function(json){
         this.setMany(json);
+        if (this.attr.manages === undefined){
+          this.attr.subordinates = Lapiz.Dictionary();
+          this.attr.subordinates(this.id, this.pub);
+        } else {
+          this.attr.subordinates = Person.ByRole(this.attr.manages || "");
+        }
       });
+
+
+      cls.getter(function Subordinates(){
+        return this.attr.subordinates;
+      });
+
+      cls.meth(function Manager(manages){
+        this.attr.manages = manages;
+        this.attr.subordinates = Person.ByRole(manages);
+        this.pub.role = "manager";
+      })
     });
 
-    Person.parseList = function(lst){
+    $L.set.meth(Person, function parseList(lst){
       Lapiz.each(lst, function(person){ Person(person); });
-    };
-    Person.getRoleContext = function(role){
+    });
+
+    $L.set.meth(Person, function getRoleContext(role){
       return {
         role: role,
         people: Person.ByRole(role)
       }
-    };
+    });
 
     $L.Index(Person);
     $L.set(Person, "ByRole", Person.GroupBy("role"));
@@ -107,18 +137,21 @@
     Person.parseList(people);
   </script>
   <script type="text/javascript" id="display-logic">
+
+    Lapiz.UI.mediator.viewMethod("log", function(node, ctx) {
+      console.log("LOG: ", ctx.id, ctx.role);
+    })
+
     Lapiz.UI.mediator.view("sayHi", "sayHi > #sayHi");
 
-    var admins = Person.getRoleContext("admin");
-    $L.UI.render("people > #main", admins);
+    $L.UI.render("person > #main", Person.all(15));
 
     setTimeout(function(){
       $L.UI.render("done > #main");
-      $L.UI.id("sayHi").remove();
     }, 2000);
 
     setTimeout(function(){
-      if (Person.ByRole("admin").on.change.length !== 0){
+      if (Person.all(15).Subordinates.on.change.length !== 0){
         $L.UI.render("errDidNotDereg > #main");
       }
     },2100);

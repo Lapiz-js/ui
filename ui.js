@@ -232,10 +232,14 @@ Lapiz.Module("UI", ["Collections", "Events", "Template", "Errors"], function($L)
   }
 
   // > Lapiz.UI.bind(node, ctx, templator)
+  // > Lapiz.UI.bind(node)
   // Binds a context and node together using the templator. If no templator is
-  // given, it will inheir a templator from it's parent, if no parent is present
-  // it will use the standard templator Generally, it is better to call
+  // given, it will inheirit a templator from it's parent, if no parent is
+  // present it will use the standard templator. Generally, it is better to call
   // Lapiz.UI.render than Lapiz.UI.bind.
+  //
+  // If ctx and templator are undefined, the ctx and templator will be
+  // inheirited - they will be whatever they would have been.
   ui.meth(function bind(node, ctx, templator){
     var cur, i, attrName, attrVal, _props;
     if (node.nodeName.toLowerCase() === "script") { return; }
@@ -309,7 +313,7 @@ Lapiz.Module("UI", ["Collections", "Events", "Template", "Errors"], function($L)
         node.textContent = i;
       }
     }
-    if (node.nodeType === 1){ //Element node
+    if (node.nodeType === 1){ // Element node
       var attrTemplates = _props['attrTemplates'];
       if (attrTemplates === undefined){
         attrTemplates = $L.Map();
@@ -328,6 +332,17 @@ Lapiz.Module("UI", ["Collections", "Events", "Template", "Errors"], function($L)
           node.attributes[attrName].value = attrVal;
         }
         if ($L.UI.bindState.proceed === false) { break; }
+      }
+    }
+    if (node.nodeType === 8){ // Comment Node
+      // > tag:comment:bind(ctx)
+      // This is kind of a hack (but only a little one). By attaching a bind
+      // function to a comment node, that will be invoked during any bind pass.
+      // This allows logic to be added without adding tags that will render.
+      // A use case if an attribute removes the tag it was originally associated
+      // with, but may need to restore it on a later bind pass.
+      if ($L.typeCheck.func(node.bind)){
+        node.bind($L.UI.bindState.ctx);
       }
     }
 
