@@ -17,6 +17,7 @@
 
   <div l-view="foo" live>Test 1: <span value="$a">$a</span>, $b</div>
   <div l-view="bar">Test 2: <span live value="$a">$a</span>, <span live value="$b">$b</span></div>
+  <div l-view="glorp">Test 3 (not live): <span value="$a">$a</span>, <span value="$b">$b</span></div>
 
   <script type="text/javascript" src="../../../build/lapiz.js"></script>
   <script type="text/javascript" src="../../../build/template.js"></script>
@@ -24,17 +25,23 @@
   <script type="text/javascript" src="../uiHelpers.js"></script>
   <script type="text/javascript">
 
-  var ctx = Lapiz.Object(function(){
-    this.properties({
+  var ctxCls = Lapiz.Cls(function(cls){
+    cls.properties({
       "a":"string",
-      "b":"string",
-    },{
-      "a": "A",
-      "b": "B"
+      "b":"string"
     });
-  }).pub;
+
+    cls.constructor(function(json){
+      this.setMany(json);
+    });
+  });
+  var ctx = ctxCls({
+    "a": "A",
+    "b": "B"
+  });
   Lapiz.UI.render("foo >> #main", ctx);
   Lapiz.UI.render("bar >> #main", ctx);
+  Lapiz.UI.render("glorp >> #main", ctx);
 
   setTimeout(function(){
     ctx.a = "Apple";

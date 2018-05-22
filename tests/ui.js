@@ -1,82 +1,130 @@
-(function(){
-  Lapiz.UI.View("test","<div id='test'>Test</div>");
-  Lapiz.UI.View("test2","<div id='test2' click='$foo'>Test<span display=viewMethod.counter>foo</span><script>/*skips script tags*/</script></div>");
+(function($L){
+  function tiggerLoad(ui){
+    ui.root.dispatchEvent(new Event("DOMContentLoaded", {bubbles: true}));
+  }
 
-  document.getElementsByTagName("body")[0].innerHTML += "<div l-view='inserted'>Inserted View</div>";
-  var c=0;
-  Lapiz.UI.mediator.viewMethod("counter", function(){
-    c += 1;
+  $L.Test("UI/loadViews", function(t){
+    var ui = $L.UI.fragment("<l-view name='testViewTag'>Test</l-view><div l-view='testViewAttribute'>Foobar</div>");
+    $L.UI.defaultHelpers(ui);
+    tiggerLoad(ui);
+    ui.View("callView", "<span>Hi there</span>")
+    ui.CloneView("testViewTag") !== undefined || t.error("testViewTag is not defined")
+    ui.CloneView("testViewAttribute") !== undefined || t.error("testViewAttribute is not defined")
+    ui.CloneView("callView") !== undefined || t.error("callView is not defined")
   });
 
-  Lapiz.Test("UI/InsertedView", function(t){
-    Lapiz.UI.CloneView("inserted").innerHTML === "Inserted View" || t.Error("Expected inserted view");
+  $L.Test("UI/pluralAttr", function(t){
+    var ui = $L.UI.fragment("<div id='main'></div><div l-view='test' foo='test'></div>");
+    $L.UI.defaultHelpers(ui);
+    var hitFoo = false;
+    ui.attribute({
+      "foo":function(){
+        hitFoo = true;
+      },
+      "bar": function(){}
+    })
+    tiggerLoad(ui);
+    ui.render("test > #main");
+
+    hitFoo || t.error("Did not run 'foo' attribute")
   });
 
-  Lapiz.Test("UI/AppendView", function(t){
-    Lapiz.UI.render("test >> body");
-    var test = Lapiz.UI.id("test");
-
-    test.innerHTML === "Test" || t.error("Expected 'Test'");
-    test.remove();
-
-    Lapiz.UI.render("test2 >> body",{
-      'foo': function(){}
+  $L.Test("UI/mediator/form", function(t){
+    var ui = $L.UI.fragment("<div id='main'></div><form id='testForm' l-view='testForm' submit='form.testForm'><input type='hidden' name='foo' value='bar' /></form>");
+    $L.UI.defaultHelpers(ui);
+    var gotData;
+    ui.mediator.form(function testForm(data){
+      gotData = data;
     });
-    Lapiz.UI.id("test2").remove();
+    tiggerLoad(ui);
+    ui.render("testForm > #main");
+    // TODO: ui.id("testForm").submit(); // not working - why?
+    ui.id("testForm").dispatchEvent(new Event("submit",{}));
+
+    gotData !== undefined && gotData.foo === "bar" || t.error("Did not get expected value");
   });
 
-  Lapiz.Test("UI/CloneError", function(t){
-    var errMsg = false;
-    try{
-      Lapiz.UI.CloneView("doesNotExist");
-    } catch(err){
-      errMsg = err.message;
-    }
+  $L.Test("UI/mediator/array", function(t){
+    var ui = $L.UI.fragment("<div id='main'></div><form id='testForm' l-view='testForm' submit='form.testForm'><input type='hidden' name='foo' value='bar' /></form>");
+    $L.UI.defaultHelpers(ui);
+    var gotData;
+    ui.mediator.form([function testForm(data){
+      gotData = data;
+    }]);
+    tiggerLoad(ui);
+    ui.render("testForm > #main");
+    // TODO: ui.id("testForm").submit(); // not working - why?
+    ui.id("testForm").dispatchEvent(new Event("submit",{}));
 
-    errMsg === "View doesNotExist is not defined" || t.error("Expected error");
+    gotData !== undefined && gotData.foo === "bar" || t.error("Did not get expected value");
   });
 
-  Lapiz.Test("UI/Attribute", function(t){
-    Lapiz.UI.attribute("foo", function(node, ctx, val){}, "bar");
+  $L.Test("UI/mediator/obj", function(t){
+    var ui = $L.UI.fragment("<div id='main'></div><form id='testForm' l-view='testForm' submit='form.testForm'><input type='hidden' name='foo' value='bar' /><script src='foo.js'></script></form>");
+    $L.UI.defaultHelpers(ui);
+    var gotData;
+    ui.mediator.form({"testForm": function (data){
+      gotData = data;
+    }});
+    tiggerLoad(ui);
+    ui.render("testForm > #main");
+    // TODO: ui.id("testForm").submit(); // not working - why?
+    ui.id("testForm").dispatchEvent(new Event("submit",{}));
+
+    gotData !== undefined && gotData.foo === "bar" || t.error("Did not get expected value");
   });
 
-  Lapiz.Test("UI/ViewMethod", function(t){
-    Lapiz.UI.mediator.viewMethod("A", function(){});
+  $L.Test("UI/selectVal", function(t){
+    var ui = $L.UI.fragment("<div id='main'></div><select l-view='selectTest' selectVal='$val' id='sel'><option value='1'>Apple</option><option value='2'>Banana</option></select>");
+    $L.UI.defaultHelpers(ui);
+    tiggerLoad(ui);
+    ui.render("selectTest > #main");
+    ui.id("sel").value === "1" || t.error("Should default to first option");
+    ui.render("selectTest > #main", {'val': 2});
+    ui.id("sel").value === "2" || t.error("Should be set to ctx value");
+  });
 
-    Lapiz.UI.mediator.viewMethod({
-      "B": function(){},
-      "C": function(){},
+  $L.Test("UI/repeat/array", function(t){
+    var ui = $L.UI.fragment("<div id='main'></div><div l-view='repeat' repeat='$$' class='repeat'>$$</div>");
+    $L.UI.defaultHelpers(ui);
+    tiggerLoad(ui);
+    ui.render("repeat > #main",[3,1,4]);
+    var nodes = ui.id("main").querySelectorAll(".repeat");
+    if (nodes.length !== 3){
+      t.error("Expected 3 nodes");
+      return;
+    } 
+    nodes[0].innerHTML === "3" || t.error("Expected index 0 to be 3");
+    nodes[1].innerHTML === "1" || t.error("Expected index 1 to be 1");
+    nodes[2].innerHTML === "4" || t.error("Expected index 2 to be 4");
+  });
+
+  $L.Test("UI/repeat/accessor", function(t){
+    var ui = $L.UI.fragment("<div id='main'></div><div l-view='repeat'><div repeat='$$' class='repeat'>$$</div></div>");
+    $L.UI.defaultHelpers(ui);
+    tiggerLoad(ui);
+    var dict = $L.Dictionary({
+      "A":"apple",
+      "B":"bannana",
+      "C":"cantaloupe",
+      "D":"dates",
     });
-  });
+    ui.render("repeat > #main", dict);
+    var nodes = ui.id("main").querySelectorAll(".repeat");
+    nodes.length === 4 || t.error("Expected 4 repeated nodes");
 
-  Lapiz.Test("UI/MediatorNameErr", function(t){
-    var errMsg = false;
-    try {
-      Lapiz.UI.mediator(12345);
-    } catch(err){
-      errMsg = err.message;
-    }
-    errMsg === "Mediator name must be a string" || t.error("Expected error");
-  });
+    dict("E", "elderberry");
+    nodes = ui.id("main").querySelectorAll(".repeat");
+    nodes.length === 5 || t.error("Expected 5 repeated nodes");
 
-  Lapiz.Test("UI/MediatorRedefineErr", function(t){
-    var errMsg = false;
-    try {
-      Lapiz.UI.mediator("viewMethod");
-    } catch(err){
-      errMsg = err.message;
-    }
-    errMsg === "Attempting to redefine viewMethod mediator" || t.error("Expected error");
+    ///// SANDBOX - Delete Me
+    var df = document.createDocumentFragment();
+    var config = { attributes: true, childList: true, characterData: true };
+    var observer = new MutationObserver(function(mutations) {
+      console.log(mutations);
+    });
+    observer.observe(df, config);
+    var child = document.createElement("div");
+    df.appendChild(child);
   });
-
-  Lapiz.Test("UI/MediatorPropNameErr", function(t){
-    var errMsg = false;
-    try {
-      Lapiz.UI.mediator.viewMethod(1234, function(){});
-    } catch(err){
-      errMsg = err.message;
-    }
-    errMsg === "Mediator property name on viewMethod must be a string, got: number" || t.error("Expected error");
-  });
-
-})();
+})(Lapiz);
