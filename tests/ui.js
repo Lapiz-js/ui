@@ -116,15 +116,5 @@
     dict("E", "elderberry");
     nodes = ui.id("main").querySelectorAll(".repeat");
     nodes.length === 5 || t.error("Expected 5 repeated nodes");
-
-    ///// SANDBOX - Delete Me
-    var df = document.createDocumentFragment();
-    var config = { attributes: true, childList: true, characterData: true };
-    var observer = new MutationObserver(function(mutations) {
-      console.log(mutations);
-    });
-    observer.observe(df, config);
-    var child = document.createElement("div");
-    df.appendChild(child);
   });
 })(Lapiz);

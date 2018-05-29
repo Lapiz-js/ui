@@ -427,9 +427,7 @@ Lapiz.Module("UI", ["Collections", "Events", "Template", "Errors"], function($L)
     rootDoc.addEventListener("DOMContentLoaded", function(){
       // The MutationObserver watches for changes to the document. When a mutation
       // happens we track which were 
-      console.log(rootDoc.body || rootDoc);
       new MutationObserver(function(mutations) {
-        console.log("Test");
         var added = [];
         var removed = [];
         var moved = [];
