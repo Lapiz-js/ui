@@ -16,8 +16,8 @@
     <a hash="1">One</a>
     <a hash="2">Two</a>
     <a hash="exc">Append !</a>
-    <a hash="alert/1">Alert 1</a>
-    <a hash="alert/2">Alert 2</a>
+    <a hash="popup/1">Alert 1</a>
+    <a hash="popup/2">Alert 2</a>
   </div>
 
   <span l-view="one">You clicked One</span>
@@ -45,7 +45,7 @@
       // "/" and all the parts are passed as arguments to the function. So
       // "foo/bar/baz" would call the foo route and pass in 2 arguments, "bar"
       // and "baz".
-      Lapiz.UI.hash("alert", function(msg){
+      Lapiz.UI.hash(function popup(msg){
         alert(msg);
       });
 

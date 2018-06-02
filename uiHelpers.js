@@ -377,38 +377,48 @@ Lapiz.Module("DefaultUIHelpers", ["UI"], function($L){
       node.setAttribute("href", "#" + hash);
     });
 
-    // > Lapiz.UI.hash(hash, fn, ctx)
-    // > Lapiz.UI.hash(hash, renderString)
+    // > Lapiz.UI.hash(hash, fn)
+    // > Lapiz.UI.hash(namedFn)
+    // > Lapiz.UI.hash(hash, renderArgs...)
+    // > Lapiz.UI.hash([argSet...])
     // Registers a hash handler. When the hash in the url changes to match the
     // given hash the function will be called or the renderString will be passed
     // into render. A hash will be split on "/" as "hash/arg1/arg2/...".
-    UI.hash = function(hash, fn, ctx){
+    //
+    // When passing in an array, each element should either be a named function
+    // or an array of arguments.
+    UI.hash = function(){
       var args = Array.prototype.slice.call(arguments);
       if (args.length === 0){
-        $L.Err.toss("Hash requires at least one arg");
+        $L.Err.toss("UI.hash requires at least one arg");
       }
       var hash = args.splice(0,1)[0];
-      var fn = args[0];
-      var ctx = args[1];
-      //TODO: test this - pass in dict?
+      var fn;
       if (args.length === 0){
-        Lapiz.each(hash, function(val, key){
-          if (Array.isArray(val) && val.length == 2){
-            UI.hash(key, val[0], val[1]);
-          } else {
-            UI.hash(key, val);
-          }
-        });
-        return;
-      } else if (typeof(args[0]) === "string"){
-        _hash[hash] = function(){
-          UI.render.apply(this, args);
-        };
-      } else if (typeof(args[0]) === "function"){
-        _hash[hash] = fn;
+        if ($L.typeCheck.func(hash)){
+          fn = hash;
+          hash = Lapiz.getFnName(fn)
+        } else if ($L.typeCheck.arr(hash)){
+          Lapiz.each(hash, function(val, key){
+            if ($L.typeCheck.arr(val)){
+              UI.hash.apply(this, val);
+            } else {
+              UI.hash(val);
+            }
+          });  
+        }
       } else {
-        return;
+        if ($L.typeCheck.str(args[0])){
+          fn = function(){
+            UI.render.apply(this, args);
+          };
+        } else if($L.typeCheck.func(args[0])){
+          fn = args[0];
+        } else{
+          $L.Err.toss("Second argument to UI.hash must be either a function or a render string")
+        }
       }
+      _hash[hash] = fn;
 
       // check if this matches the current hash
       var urlHash = document.location.hash.substr(1).split("/");
